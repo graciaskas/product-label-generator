@@ -1,0 +1,307 @@
+"use client"
+
+import { useState, useRef, useEffect } from "react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Badge } from "@/components/ui/badge"
+import { Copy, RefreshCw, QrCode, Download } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
+import type { ProductData } from "./label-generator"
+
+interface CodeGeneratorProps {
+  productData: ProductData
+  generatedCode: string
+  onGenerateCode: () => void
+}
+
+type CodeFormat = "standard" | "batch" | "qr" | "barcode" | "custom"
+
+const generateBarcode = (text: string, canvas: HTMLCanvasElement) => {
+  const ctx = canvas.getContext("2d")
+  if (!ctx) return
+
+  // Set canvas dimensions
+  canvas.width = 300
+  canvas.height = 80
+
+  // Clear canvas
+  ctx.fillStyle = "white"
+  ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+  // Simple Code 128 style barcode generation
+  const barWidth = 2
+  const barHeight = 50
+  const startX = 20
+  const startY = 10
+
+  // Convert text to binary pattern (simplified)
+  let binaryPattern = ""
+  for (let i = 0; i < text.length; i++) {
+    const charCode = text.charCodeAt(i)
+    binaryPattern += charCode % 2 === 0 ? "101" : "110"
+  }
+
+  // Draw bars
+  ctx.fillStyle = "black"
+  for (let i = 0; i < binaryPattern.length && i < 100; i++) {
+    if (binaryPattern[i] === "1") {
+      ctx.fillRect(startX + i * barWidth, startY, barWidth, barHeight)
+    }
+  }
+
+  // Add text below barcode
+  ctx.fillStyle = "black"
+  ctx.font = "12px monospace"
+  ctx.textAlign = "center"
+  ctx.fillText(text, canvas.width / 2, startY + barHeight + 20)
+}
+
+export function CodeGenerator({ productData, generatedCode, onGenerateCode }: CodeGeneratorProps) {
+  const [codeFormat, setCodeFormat] = useState<CodeFormat>("barcode")
+  const [customPrefix, setCustomPrefix] = useState("")
+  const [batchSize, setBatchSize] = useState("1")
+  const [generatedCodes, setGeneratedCodes] = useState<string[]>([])
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const { toast } = useToast()
+
+  const generateCode = (format: CodeFormat, index?: number) => {
+    const timestamp = Date.now().toString(36).toUpperCase()
+    const productCode = productData.productCode.replace(/[^A-Z0-9]/g, "")
+    const manufacturingDate = productData.manufacturingDate.replace(/-/g, "")
+    const randomSuffix = Math.random().toString(36).substring(2, 6).toUpperCase()
+
+    switch (format) {
+      case "standard":
+        return `${productCode}-${timestamp}`
+      case "batch":
+        const batchNumber = String(index || 1).padStart(3, "0")
+        return `${productCode}-${manufacturingDate}-${batchNumber}-${randomSuffix}`
+      case "qr":
+        return `QR-${productCode}-${timestamp}-${randomSuffix}`
+      case "barcode":
+        return `${productCode}${manufacturingDate.substring(2)}${randomSuffix}`
+      case "custom":
+        const prefix = customPrefix || "CUSTOM"
+        return `${prefix}-${productCode}-${timestamp}`
+      default:
+        return `${productCode}-${timestamp}`
+    }
+  }
+
+  const handleGenerateCode = () => {
+    if (codeFormat === "batch") {
+      const size = Number.parseInt(batchSize) || 1
+      const codes = Array.from({ length: size }, (_, i) => generateCode("batch", i + 1))
+      setGeneratedCodes(codes)
+    } else {
+      const code = generateCode(codeFormat)
+      setGeneratedCodes([code])
+      onGenerateCode()
+    }
+  }
+
+  useEffect(() => {
+    if (generatedCodes.length > 0 && codeFormat === "barcode" && canvasRef.current) {
+      generateBarcode(generatedCodes[0], canvasRef.current)
+    }
+  }, [generatedCodes, codeFormat])
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text)
+    toast({
+      title: "Copié !",
+      description: "Le code a été copié dans le presse-papiers.",
+    })
+  }
+
+  const copyAllCodes = () => {
+    const allCodes = generatedCodes.join("\n")
+    navigator.clipboard.writeText(allCodes)
+    toast({
+      title: "Tous les codes copiés !",
+      description: `${generatedCodes.length} codes copiés dans le presse-papiers.`,
+    })
+  }
+
+  const downloadBarcode = () => {
+    if (canvasRef.current) {
+      const link = document.createElement("a")
+      link.download = `barcode-${generatedCodes[0]}.png`
+      link.href = canvasRef.current.toDataURL()
+      link.click()
+    }
+  }
+
+  const exportCodes = () => {
+    const csvContent = [
+      "Code,Produit,Date_Fabrication,Date_Expiration,Poids_Net",
+      ...generatedCodes.map(
+        (code) =>
+          `${code},${productData.productName},${productData.manufacturingDate},${productData.expiryDate},${productData.netWeight}`,
+      ),
+    ].join("\n")
+
+    const blob = new Blob([csvContent], { type: "text/csv" })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement("a")
+    link.href = url
+    link.download = `codes-tracabilite-${productData.productCode || "produit"}.csv`
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Configuration du Code</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="codeFormat">Format du Code</Label>
+            <Select value={codeFormat} onValueChange={(value: CodeFormat) => setCodeFormat(value)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Sélectionnez un format" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="standard">Standard (PRODUIT-TIMESTAMP)</SelectItem>
+                <SelectItem value="batch">Lot (PRODUIT-DATE-LOT-RANDOM)</SelectItem>
+                <SelectItem value="qr">QR Code (QR-PRODUIT-TIMESTAMP-RANDOM)</SelectItem>
+                <SelectItem value="barcode">Code-barres (PRODUITDATERANDOM)</SelectItem>
+                <SelectItem value="custom">Personnalisé</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {codeFormat === "custom" && (
+            <div className="space-y-2">
+              <Label htmlFor="customPrefix">Préfixe Personnalisé</Label>
+              <Input
+                id="customPrefix"
+                value={customPrefix}
+                onChange={(e) => setCustomPrefix(e.target.value)}
+                placeholder="ex: PHARMA, MED, etc."
+              />
+            </div>
+          )}
+
+          {codeFormat === "batch" && (
+            <div className="space-y-2">
+              <Label htmlFor="batchSize">Nombre de Codes à Générer</Label>
+              <Input
+                id="batchSize"
+                type="number"
+                min="1"
+                max="1000"
+                value={batchSize}
+                onChange={(e) => setBatchSize(e.target.value)}
+                placeholder="1"
+              />
+            </div>
+          )}
+
+          <Button onClick={handleGenerateCode} className="w-full" disabled={!productData.productCode}>
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Générer {codeFormat === "batch" ? "les Codes" : "le Code"}
+          </Button>
+        </CardContent>
+      </Card>
+
+      {generatedCodes.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center justify-between">
+              Codes Générés
+              <Badge variant="secondary">{generatedCodes.length} code(s)</Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={copyAllCodes}>
+                <Copy className="h-4 w-4 mr-2" />
+                Copier Tous
+              </Button>
+              <Button variant="outline" size="sm" onClick={exportCodes}>
+                <QrCode className="h-4 w-4 mr-2" />
+                Exporter CSV
+              </Button>
+              {codeFormat === "barcode" && (
+                <Button variant="outline" size="sm" onClick={downloadBarcode}>
+                  <Download className="h-4 w-4 mr-2" />
+                  Télécharger Code-barres
+                </Button>
+              )}
+            </div>
+
+            {codeFormat === "barcode" && generatedCodes.length > 0 && (
+              <div className="flex justify-center p-4 bg-white border rounded">
+                <canvas ref={canvasRef} className="border" style={{ maxWidth: "100%", height: "auto" }} />
+              </div>
+            )}
+
+            <div className="space-y-2 max-h-60 overflow-y-auto">
+              {generatedCodes.map((code, index) => (
+                <div key={index} className="flex items-center justify-between bg-muted p-3 rounded">
+                  <code className="font-mono text-sm">{code}</code>
+                  <Button variant="ghost" size="sm" onClick={() => copyToClipboard(code)}>
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Informations du Code</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <span className="font-semibold">Format:</span>
+              <span className="ml-2 capitalize">{codeFormat}</span>
+            </div>
+            <div>
+              <span className="font-semibold">Produit:</span>
+              <span className="ml-2">{productData.productCode || "Non défini"}</span>
+            </div>
+            <div>
+              <span className="font-semibold">Date Fab.:</span>
+              <span className="ml-2">{productData.manufacturingDate || "Non définie"}</span>
+            </div>
+            <div>
+              <span className="font-semibold">Date Exp.:</span>
+              <span className="ml-2">{productData.expiryDate || "Non définie"}</span>
+            </div>
+          </div>
+
+          <div className="pt-3 border-t">
+            <h4 className="font-semibold mb-2">Formats Disponibles:</h4>
+            <div className="space-y-1 text-xs text-muted-foreground">
+              <div>
+                • <strong>Standard:</strong> Format simple avec timestamp
+              </div>
+              <div>
+                • <strong>Lot:</strong> Inclut date de fabrication et numéro de lot
+              </div>
+              <div>
+                • <strong>QR Code:</strong> Optimisé pour les codes QR
+              </div>
+              <div>
+                • <strong>Code-barres:</strong> Format compact sans séparateurs
+              </div>
+              <div>
+                • <strong>Personnalisé:</strong> Avec votre propre préfixe
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
