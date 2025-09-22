@@ -112,8 +112,8 @@ export default function SignupPage() {
               <Package className="w-6 h-6 text-white" />
             </div>
           </div>
-          <h2 className="mt-6 text-3xl font-bold text-gray-900">
-            Créer un compte PHARMAKINA
+          <h2 className="mt-6 text-2xl font-bold text-gray-900">
+           Pharmakina eLabelling
           </h2>
           <p className="mt-2 text-sm text-gray-600">
             Rejoignez l'équipe et accédez au générateur d'étiquettes
@@ -121,12 +121,12 @@ export default function SignupPage() {
         </div>
 
         <Card>
-          <CardHeader>
+          {/* <CardHeader className="text-center">
             <CardTitle>Inscription</CardTitle>
             <CardDescription>
               Remplissez les informations ci-dessous pour créer votre compte
             </CardDescription>
-          </CardHeader>
+          </CardHeader> */}
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               {error && (

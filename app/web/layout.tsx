@@ -6,12 +6,12 @@ import { Analytics } from "@vercel/analytics/next"
 import { SidebarProvider } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import { Suspense } from "react"
-import "./globals.css"
+import "../globals.css"
 
 export const metadata: Metadata = {
-  title: "v0 App",
-  description: "Created with v0",
-  generator: "v0.app",
+  title: "Pharmakina eLabelling",
+  description: "Accédez au générateur d'étiquettes pharmaceutiques",
+  authors: [{name:"Gracias Kasongo"}],
 }
 
 export default function RootLayout({
