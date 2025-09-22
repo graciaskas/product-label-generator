@@ -1,6 +1,6 @@
 "use client"
 
-import { Package, History, Settings, FileText, BarChart3, Home } from "lucide-react"
+import { Package, History, Settings, FileText, BarChart3, Home, Users } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
@@ -30,6 +30,11 @@ const menuItems = [
     title: "Gestion produits",
     url: "/products",
     icon: Package,
+  },
+  {
+    title: "Utilisateurs",
+    url: "/users",
+    icon: Users,
   },
   {
     title: "Historique",
