@@ -89,7 +89,7 @@ export default function Home() {
               variant="outline"
               className="w-full justify-start bg-transparent"
             >
-              <Link href="/products">
+              <Link href="/web/products">
                 <Package className="mr-2 h-4 w-4" />
                 Gérer les produits
               </Link>
@@ -99,7 +99,7 @@ export default function Home() {
               variant="outline"
               className="w-full justify-start bg-transparent"
             >
-              <Link href="/history">
+              <Link href="/web/history">
                 <History className="mr-2 h-4 w-4" />
                 Voir l'historique
               </Link>

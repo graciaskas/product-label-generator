@@ -1,6 +1,6 @@
 export interface PrintHistoryEntry {
   id: string;
-  productName: string;
+  name: string;
   code: string;
   template: string;
   printedAt: string;

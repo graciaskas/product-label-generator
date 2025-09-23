@@ -48,7 +48,7 @@ export function LabelPreview({
   const { toast } = useToast();
 
   const handlePrint = async () => {
-    if (!template || !productData.productName) {
+    if (!template || !productData.name) {
       toast({
         title: "Erreur",
         description:
@@ -69,7 +69,7 @@ export function LabelPreview({
             <!DOCTYPE html>
             <html>
               <head>
-                <title>Étiquette - ${productData.productName}</title>
+                <title>Étiquette - ${productData.name}</title>
                 <style>
                   body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
                   .label { page-break-after: always; margin-bottom: 20px; }
@@ -93,7 +93,7 @@ export function LabelPreview({
           printWindow.print();
 
           PrintHistoryManager.addEntry({
-            productName: productData.productName,
+            name: productData.name,
             code: productData.code || "N/A",
             template: template.name,
             printedBy: "Admin", // TODO: Get from auth context
@@ -114,7 +114,7 @@ export function LabelPreview({
       }
     } catch (error) {
       PrintHistoryManager.addEntry({
-        productName: productData.productName,
+        name: productData.name,
         code: productData.code || "N/A",
         template: template.name,
         printedBy: "Admin",
@@ -153,7 +153,7 @@ export function LabelPreview({
   };
 
   const handleExport = async () => {
-    if (!template || !productData.productName) {
+    if (!template || !productData.name) {
       toast({
         title: "Erreur",
         description:
@@ -184,7 +184,7 @@ export function LabelPreview({
       }
 
       PrintHistoryManager.addEntry({
-        productName: productData.productName,
+        name: productData.name,
         code: productData.code || "N/A",
         template: template.name,
         printedBy: "Admin",
@@ -200,7 +200,7 @@ export function LabelPreview({
       });
     } catch (error) {
       PrintHistoryManager.addEntry({
-        productName: productData.productName,
+        name: productData.name,
         code: productData.code || "N/A",
         template: template.name,
         printedBy: "Admin",
@@ -234,7 +234,7 @@ export function LabelPreview({
 
       ctx.fillStyle = "black";
       ctx.font = "16px Arial";
-      ctx.fillText(productData.productName || "Produit", 50, 50);
+      ctx.fillText(productData.name || "Produit", 50, 50);
       ctx.fillText(`Code: ${generatedCode}`, 50, 80);
 
       const link = document.createElement("a");
@@ -249,7 +249,7 @@ export function LabelPreview({
       Étiquette Pharmaceutique
       ========================
       
-      Produit: ${productData.productName}
+      Produit: ${productData.name}
       Code: ${productData.code}
       Date de fabrication: ${productData.manufacturingDate}
       Date d'expiration: ${productData.expiryDate}
@@ -274,7 +274,7 @@ export function LabelPreview({
     const svgContent = `
       <svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
         <rect width="800" height="600" fill="white" stroke="black" strokeWidth="2"/>
-        <text x="50" y="50" fontFamily="Arial" fontSize="20" fill="black">${productData.productName}</text>
+        <text x="50" y="50" fontFamily="Arial" fontSize="20" fill="black">${productData.name}</text>
         <text x="50" y="80" fontFamily="Arial" fontSize="14" fill="black">Code: ${generatedCode}</text>
       </svg>
     `;
@@ -320,7 +320,6 @@ export function LabelPreview({
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold">Aperçu de l'Étiquette</h3>
         <div className="flex gap-2">
           <Dialog>
             <DialogTrigger asChild>
@@ -430,25 +429,23 @@ export function LabelPreview({
       </div>
 
       <Card>
-        <CardContent className="p-6">
-          <div
-            id="label-preview"
-            className="bg-white border-2 border-gray-300 p-4 print:border-0 print:p-0"
-          >
-            {template.id === "template1" && (
-              <Template1Preview
-                productData={productData}
-                generatedCode={generatedCode}
-              />
-            )}
-            {template.id === "template2" && (
-              <Template2Preview
-                productData={productData}
-                generatedCode={generatedCode}
-              />
-            )}
-          </div>
-        </CardContent>
+        <div
+          id="label-preview"
+          className="bg-white border-2 border-gray-300 p-4 print:border-0 print:p-0"
+        >
+          {template.id === "template1" && (
+            <Template1Preview
+              productData={productData}
+              generatedCode={generatedCode}
+            />
+          )}
+          {template.id === "template2" && (
+            <Template2Preview
+              productData={productData}
+              generatedCode={generatedCode}
+            />
+          )}
+        </div>
       </Card>
 
       <Card>
@@ -517,7 +514,7 @@ function Template1Preview({
 
       <div className="bg-green-500 text-white p-2 mb-2">
         <div className="bg-white text-green-800 rounded-full px-4 py-2 text-center font-bold text-lg">
-          {productData.productName || "NOM DU PRODUIT"}
+          {productData.name || "NOM DU PRODUIT"}
         </div>
       </div>
 
@@ -601,7 +598,7 @@ function Template2Preview({
       <div className="border-4 border-green-500 p-3 mb-2">
         <div className="text-center">
           <div className="text-red-600 font-bold text-lg mb-1">
-            {productData.productName || "QUININE HYDROCHLORIDE DIHYDRATE"}
+            {productData.name || "QUININE HYDROCHLORIDE DIHYDRATE"}
           </div>
           <div className="font-bold">
             CAS: {productData.casNumber || "6119-47-7"}
