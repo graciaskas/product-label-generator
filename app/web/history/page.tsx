@@ -55,7 +55,7 @@ export default function HistoryPage() {
 
   const filteredHistory = history.filter((item) => {
     const matchesSearch =
-      item.productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.code.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus =
       statusFilter === "all" || item.status === statusFilter;
@@ -115,8 +115,8 @@ export default function HistoryPage() {
       PrintHistoryManager.clearHistory();
       setHistory([]);
       toast({
-        title: t('historyCleared'),
-        description: t('allHistoryDeleted'),
+        title: t("historyCleared"),
+        description: t("allHistoryDeleted"),
       });
     }
   };
@@ -125,19 +125,19 @@ export default function HistoryPage() {
     <div className="space-y-6 ">
       <div className="flex flex-1 justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-primary">{t('printHistory')}</h1>
-          <p className="text-muted-foreground">
-            {t('printHistorySubtitle')}
-          </p>
+          <h1 className="text-3xl font-bold text-primary">
+            {t("printHistory")}
+          </h1>
+          <p className="text-muted-foreground">{t("printHistorySubtitle")}</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={clearHistory}>
             <Trash2 className="mr-2 h-4 w-4" />
-            {t('clear')}
+            {t("clear")}
           </Button>
           <Button onClick={exportHistory}>
             <Download className="mr-2 h-4 w-4" />
-            {t('exportCSV')}
+            {t("exportCSV")}
           </Button>
         </div>
       </div>
@@ -146,7 +146,7 @@ export default function HistoryPage() {
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
-            placeholder={t('searchHistory')}
+            placeholder={t("searchHistory")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
@@ -155,16 +155,17 @@ export default function HistoryPage() {
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-48">
             <Filter className="mr-2 h-4 w-4" />
-            <SelectValue placeholder={t('filterByStatus')} />
+            <SelectValue placeholder={t("filterByStatus")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">{t('allStatuses')}</SelectItem>
-            <SelectItem value="completed">{t('completed')}</SelectItem>
-            <SelectItem value="failed">{t('failed')}</SelectItem>
+            <SelectItem value="all">{t("allStatuses")}</SelectItem>
+            <SelectItem value="completed">{t("completed")}</SelectItem>
+            <SelectItem value="failed">{t("failed")}</SelectItem>
           </SelectContent>
         </Select>
         <Badge variant="secondary">
-          {filteredHistory.length} {t('print')}{filteredHistory.length > 1 ? "s" : ""}
+          {filteredHistory.length} {t("print")}
+          {filteredHistory.length > 1 ? "s" : ""}
         </Badge>
       </div>
 
@@ -189,39 +190,39 @@ export default function HistoryPage() {
                     item.status === "completed" ? "default" : "destructive"
                   }
                 >
-                  {item.status === "completed" ? t('completed') : t('failed')}
+                  {item.status === "completed" ? t("completed") : t("failed")}
                 </Badge>
               </div>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 <div>
-                  <p className="text-sm font-medium">{t('templateUsed')}</p>
+                  <p className="text-sm font-medium">{t("templateUsed")}</p>
                   <p className="text-sm text-muted-foreground">
                     {item.template}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium">{t('printDate')}</p>
+                  <p className="text-sm font-medium">{t("printDate")}</p>
                   <p className="text-sm text-muted-foreground flex items-center">
                     <Calendar className="mr-1 h-3 w-3" />
                     {item.printedAt}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium">{t('quantity')}</p>
+                  <p className="text-sm font-medium">{t("quantity")}</p>
                   <p className="text-sm text-muted-foreground">
-                    {item.quantity} {t('labels')}
+                    {item.quantity} {t("labels")}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium">{t('type')}</p>
+                  <p className="text-sm font-medium">{t("type")}</p>
                   <p className="text-sm text-muted-foreground">
-                    {item.exportFormat || item.printSize || t('print')}
+                    {item.exportFormat || item.printSize || t("print")}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium">{t('barcodeGenerated')}</p>
+                  <p className="text-sm font-medium">{t("barcodeGenerated")}</p>
                   <p className="text-sm text-muted-foreground font-mono">
                     {item.barcodeGenerated}
                   </p>
@@ -235,11 +236,9 @@ export default function HistoryPage() {
       {filteredHistory.length === 0 && (
         <div className="text-center py-12">
           <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
-          <h3 className="mt-4 text-lg font-semibold">{t('noHistoryFound')}</h3>
+          <h3 className="mt-4 text-lg font-semibold">{t("noHistoryFound")}</h3>
           <p className="text-muted-foreground">
-            {searchTerm
-              ? t('tryModifyingSearch')
-              : t('noHistoryFoundDesc')}
+            {searchTerm ? t("tryModifyingSearch") : t("noHistoryFoundDesc")}
           </p>
         </div>
       )}

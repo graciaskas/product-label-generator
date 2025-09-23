@@ -21,7 +21,7 @@ export default function WebLayout({
             <AppSidebar />
             <main className="flex-1 ">
               <SidebarHeader className="border-b px-6 py-4 h-[81px]">
-                <div className="flex justify-between items-center w-full">
+                <div className="flex justify-end gap-2 items-center w-full">
                   <div className="flex items-center gap-2">
                     <ThemeToggle />
                     <LanguageToggle />
@@ -35,7 +35,6 @@ export default function WebLayout({
                   <div>
                     <h2 className="font-semibold text-lg">Gracias Kasongo</h2>
                   </div>
-                </div>
                 </div>
               </SidebarHeader>
               <div className="p-6">{children}</div>

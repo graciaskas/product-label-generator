@@ -50,11 +50,7 @@ const menuItems = [
     url: "/web/history",
     icon: History,
   },
-  {
-    title: "Statistiques",
-    url: "/web/stats",
-    icon: BarChart3,
-  },
+
   {
     title: "Paramètres",
     url: "/web/settings",
@@ -79,36 +75,37 @@ export function AppSidebar() {
           <div>
             <h2 className="font-semibold text-lg">PHARMAKINA</h2>
             <p className="text-sm text-muted-foreground">
-              {t('labelGenerator')}
+              {t("labelGenerator")}
             </p>
           </div>
         </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>{t('navigation')}</SidebarGroupLabel>
+          <SidebarGroupLabel>{t("navigation")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item, index) => {
                 const translationKeys = [
-                  'dashboard',
-                  'generateLabels', 
-                  'productManagement',
-                  'users',
-                  'history',
-                  'statistics',
-                  'settings'
+                  "dashboard",
+                  "generateLabels",
+                  "productManagement",
+                  "users",
+                  "history",
+                  "statistics",
+                  "settings",
                 ];
                 return (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={pathname === item.url}>
-                    <Link href={item.url} className="flex items-center gap-3">
-                      <item.icon className="w-4 h-4" />
-                      <span>{t(translationKeys[index])}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              )})}
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild isActive={pathname === item.url}>
+                      <Link href={item.url} className="flex items-center gap-3">
+                        <item.icon className="w-4 h-4" />
+                        <span>{t(translationKeys[index])}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
