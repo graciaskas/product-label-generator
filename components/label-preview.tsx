@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -445,7 +445,6 @@ export function LabelPreview({
       </div>
 
       <Card>
-<<<<<<< HEAD
         <div
           id="label-preview"
           className="bg-white border-2 border-gray-300 p-4 print:border-0 print:p-0"
@@ -463,7 +462,7 @@ export function LabelPreview({
             />
           )}
         </div>
-=======
+
         <CardContent className="p-6">
           <div
             id="label-preview"
@@ -485,7 +484,6 @@ export function LabelPreview({
             )}
           </div>
         </CardContent>
->>>>>>> refs/remotes/origin/main
       </Card>
 
       <Card>
@@ -622,11 +620,11 @@ function Template1Preview({
               Code de Traçabilité: {generatedCode}
             </div>
             {barcodeDataURL && (
-              <img 
-                src={barcodeDataURL} 
+              <img
+                src={barcodeDataURL}
                 alt={`Barcode: ${generatedCode}`}
                 className="barcode-image mx-auto"
-                style={{ maxWidth: '300px', height: 'auto' }}
+                style={{ maxWidth: "300px", height: "auto" }}
               />
             )}
           </div>
@@ -795,11 +793,11 @@ function Template2Preview({
             Code de Traçabilité: {generatedCode}
           </div>
           {barcodeDataURL && (
-            <img 
-              src={barcodeDataURL} 
+            <img
+              src={barcodeDataURL}
               alt={`Barcode: ${generatedCode}`}
               className="barcode-image mx-auto"
-              style={{ maxWidth: '300px', height: 'auto' }}
+              style={{ maxWidth: "300px", height: "auto" }}
             />
           )}
         </div>

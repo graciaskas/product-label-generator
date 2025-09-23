@@ -16,10 +16,6 @@ import { Badge } from "@/components/ui/badge";
 import { Copy, RefreshCw, QrCode, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { ProductData } from "./label-generator";
-import {
-  generateBarcodeDataURL,
-  downloadBarcode,
-} from "@/lib/barcode-generator";
 
 interface CodeGeneratorProps {
   productData: ProductData;
@@ -28,6 +24,46 @@ interface CodeGeneratorProps {
 }
 
 type CodeFormat = "standard" | "batch" | "qr" | "barcode" | "custom";
+
+const generateBarcode = (text: string, canvas: HTMLCanvasElement) => {
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+
+  // Set canvas dimensions
+  canvas.width = 300;
+  canvas.height = 80;
+
+  // Clear canvas
+  ctx.fillStyle = "white";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Simple Code 128 style barcode generation
+  const barWidth = 2;
+  const barHeight = 50;
+  const startX = 20;
+  const startY = 10;
+
+  // Convert text to binary pattern (simplified)
+  let binaryPattern = "";
+  for (let i = 0; i < text.length; i++) {
+    const charCode = text.charCodeAt(i);
+    binaryPattern += charCode % 2 === 0 ? "101" : "110";
+  }
+
+  // Draw bars
+  ctx.fillStyle = "black";
+  for (let i = 0; i < binaryPattern.length && i < 100; i++) {
+    if (binaryPattern[i] === "1") {
+      ctx.fillRect(startX + i * barWidth, startY, barWidth, barHeight);
+    }
+  }
+
+  // Add text below barcode
+  ctx.fillStyle = "black";
+  ctx.font = "12px monospace";
+  ctx.textAlign = "center";
+  ctx.fillText(text, canvas.width / 2, startY + barHeight + 20);
+};
 
 export function CodeGenerator({
   productData,
@@ -38,7 +74,7 @@ export function CodeGenerator({
   const [customPrefix, setCustomPrefix] = useState("");
   const [batchSize, setBatchSize] = useState("1");
   const [generatedCodes, setGeneratedCodes] = useState<string[]>([]);
-  const [barcodeDataURL, setBarcodeDataURL] = useState<string>("");
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const { toast } = useToast();
 
   const generateCode = (format: CodeFormat, index?: number) => {
@@ -83,9 +119,12 @@ export function CodeGenerator({
   };
 
   useEffect(() => {
-    if (generatedCodes.length > 0 && codeFormat === "barcode") {
-      const dataURL = generateBarcodeDataURL(generatedCodes[0]);
-      setBarcodeDataURL(dataURL);
+    if (
+      generatedCodes.length > 0 &&
+      codeFormat === "barcode" &&
+      canvasRef.current
+    ) {
+      generateBarcode(generatedCodes[0], canvasRef.current);
     }
   }, [generatedCodes, codeFormat]);
 
@@ -107,8 +146,11 @@ export function CodeGenerator({
   };
 
   const downloadBarcode = () => {
-    if (generatedCodes.length > 0) {
-      downloadBarcode(generatedCodes[0], `barcode-${generatedCodes[0]}.png`);
+    if (canvasRef.current) {
+      const link = document.createElement("a");
+      link.download = `barcode-${generatedCodes[0]}.png`;
+      link.href = canvasRef.current.toDataURL();
+      link.click();
     }
   };
 
@@ -230,14 +272,11 @@ export function CodeGenerator({
 
             {codeFormat === "barcode" && generatedCodes.length > 0 && (
               <div className="flex justify-center p-4 bg-white border rounded">
-                {barcodeDataURL && (
-                  <img
-                    src={barcodeDataURL}
-                    alt={`Barcode: ${generatedCodes[0]}`}
-                    className="border"
-                    style={{ maxWidth: "100%", height: "auto" }}
-                  />
-                )}
+                <canvas
+                  ref={canvasRef}
+                  className="border"
+                  style={{ maxWidth: "100%", height: "auto" }}
+                />
               </div>
             )}
 
