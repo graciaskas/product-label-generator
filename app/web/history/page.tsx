@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
 import {
   Card,
@@ -33,6 +34,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 
 export default function HistoryPage() {
+  const { t } = useTranslation();
   const [history, setHistory] = useState<PrintHistoryEntry[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -113,8 +115,8 @@ export default function HistoryPage() {
       PrintHistoryManager.clearHistory();
       setHistory([]);
       toast({
-        title: "Historique effacé",
-        description: "Tout l'historique des impressions a été supprimé",
+        title: t('historyCleared'),
+        description: t('allHistoryDeleted'),
       });
     }
   };
@@ -123,21 +125,19 @@ export default function HistoryPage() {
     <div className="space-y-6 ">
       <div className="flex flex-1 justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-primary">
-            Historique des impressions
-          </h1>
+          <h1 className="text-3xl font-bold text-primary">{t('printHistory')}</h1>
           <p className="text-muted-foreground">
-            Consultez l'historique de toutes les étiquettes imprimées
+            {t('printHistorySubtitle')}
           </p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={clearHistory}>
             <Trash2 className="mr-2 h-4 w-4" />
-            Effacer
+            {t('clear')}
           </Button>
           <Button onClick={exportHistory}>
             <Download className="mr-2 h-4 w-4" />
-            Exporter CSV
+            {t('exportCSV')}
           </Button>
         </div>
       </div>
@@ -146,7 +146,7 @@ export default function HistoryPage() {
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
-            placeholder="Rechercher dans l'historique..."
+            placeholder={t('searchHistory')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
@@ -155,17 +155,16 @@ export default function HistoryPage() {
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-48">
             <Filter className="mr-2 h-4 w-4" />
-            <SelectValue placeholder="Filtrer par statut" />
+            <SelectValue placeholder={t('filterByStatus')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Tous les statuts</SelectItem>
-            <SelectItem value="completed">Terminé</SelectItem>
-            <SelectItem value="failed">Échoué</SelectItem>
+            <SelectItem value="all">{t('allStatuses')}</SelectItem>
+            <SelectItem value="completed">{t('completed')}</SelectItem>
+            <SelectItem value="failed">{t('failed')}</SelectItem>
           </SelectContent>
         </Select>
         <Badge variant="secondary">
-          {filteredHistory.length} impression
-          {filteredHistory.length > 1 ? "s" : ""}
+          {filteredHistory.length} {t('print')}{filteredHistory.length > 1 ? "s" : ""}
         </Badge>
       </div>
 
@@ -190,39 +189,39 @@ export default function HistoryPage() {
                     item.status === "completed" ? "default" : "destructive"
                   }
                 >
-                  {item.status === "completed" ? "Terminé" : "Échoué"}
+                  {item.status === "completed" ? t('completed') : t('failed')}
                 </Badge>
               </div>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 <div>
-                  <p className="text-sm font-medium">Modèle utilisé</p>
+                  <p className="text-sm font-medium">{t('templateUsed')}</p>
                   <p className="text-sm text-muted-foreground">
                     {item.template}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium">Date d'impression</p>
+                  <p className="text-sm font-medium">{t('printDate')}</p>
                   <p className="text-sm text-muted-foreground flex items-center">
                     <Calendar className="mr-1 h-3 w-3" />
                     {item.printedAt}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium">Quantité</p>
+                  <p className="text-sm font-medium">{t('quantity')}</p>
                   <p className="text-sm text-muted-foreground">
-                    {item.quantity} étiquettes
+                    {item.quantity} {t('labels')}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium">Type</p>
+                  <p className="text-sm font-medium">{t('type')}</p>
                   <p className="text-sm text-muted-foreground">
-                    {item.exportFormat || item.printSize || "Impression"}
+                    {item.exportFormat || item.printSize || t('print')}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium">Code-barres généré</p>
+                  <p className="text-sm font-medium">{t('barcodeGenerated')}</p>
                   <p className="text-sm text-muted-foreground font-mono">
                     {item.barcodeGenerated}
                   </p>
@@ -236,13 +235,11 @@ export default function HistoryPage() {
       {filteredHistory.length === 0 && (
         <div className="text-center py-12">
           <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
-          <h3 className="mt-4 text-lg font-semibold">
-            Aucun historique trouvé
-          </h3>
+          <h3 className="mt-4 text-lg font-semibold">{t('noHistoryFound')}</h3>
           <p className="text-muted-foreground">
             {searchTerm
-              ? "Essayez de modifier votre recherche"
-              : "Aucune impression n'a encore été effectuée"}
+              ? t('tryModifyingSearch')
+              : t('noHistoryFoundDesc')}
           </p>
         </div>
       )}

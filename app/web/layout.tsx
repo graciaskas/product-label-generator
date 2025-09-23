@@ -5,6 +5,8 @@ import AuthProvider from "@/providers/AuthProvider";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Suspense } from "react";
 import { Package, User2Icon } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { LanguageToggle } from "@/components/language-toggle";
 
 export default function WebLayout({
   children,
@@ -19,7 +21,11 @@ export default function WebLayout({
             <AppSidebar />
             <main className="flex-1 ">
               <SidebarHeader className="border-b px-6 py-4 h-[81px]">
-                <div className="flex justify-end items-center gap-2">
+                <div className="flex justify-between items-center w-full">
+                  <div className="flex items-center gap-2">
+                    <ThemeToggle />
+                    <LanguageToggle />
+                  </div>
                   <div
                     style={{ backgroundColor: "oklch(40.40% 0.042 160.33)" }}
                     className="w-8 h-8  rounded-lg flex items-center justify-center"
@@ -29,6 +35,7 @@ export default function WebLayout({
                   <div>
                     <h2 className="font-semibold text-lg">Gracias Kasongo</h2>
                   </div>
+                </div>
                 </div>
               </SidebarHeader>
               <div className="p-6">{children}</div>

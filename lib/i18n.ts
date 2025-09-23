@@ -13,6 +13,10 @@ const resources = {
       statistics: "Statistics",
       settings: "Settings",
       
+      // Common UI
+      navigation: "Navigation",
+      labelGenerator: "Label Generator",
+      
       // Dashboard
       dashboardTitle: "Dashboard",
       dashboardSubtitle: "Manage your products and generate pharmaceutical labels",
@@ -92,6 +96,17 @@ const resources = {
       language: "Language",
       english: "English",
       french: "French",
+      
+      // History specific
+      entriesExported: "entries exported to CSV",
+      historyCleared: "History cleared",
+      allHistoryDeleted: "All print history has been deleted",
+      
+      // Dashboard specific
+      quickActionsDesc: "Quickly access main features",
+      recentActivityDesc: "Latest actions performed",
+      labelGenerated: "Label generated for",
+      hoursAgo: "{{count}} hours ago",
     }
   },
   fr: {
@@ -104,6 +119,10 @@ const resources = {
       history: "Historique",
       statistics: "Statistiques",
       settings: "Paramètres",
+      
+      // Common UI
+      navigation: "Navigation",
+      labelGenerator: "Générateur d'étiquettes",
       
       // Dashboard
       dashboardTitle: "Tableau de bord",
@@ -184,6 +203,17 @@ const resources = {
       language: "Langue",
       english: "Anglais",
       french: "Français",
+      
+      // History specific
+      entriesExported: "entrées exportées en CSV",
+      historyCleared: "Historique effacé",
+      allHistoryDeleted: "Tout l'historique des impressions a été supprimé",
+      
+      // Dashboard specific
+      quickActionsDesc: "Accédez rapidement aux fonctionnalités principales",
+      recentActivityDesc: "Dernières actions effectuées",
+      labelGenerated: "Étiquette générée pour",
+      hoursAgo: "Il y a {{count}} heures",
     }
   }
 };

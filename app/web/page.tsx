@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslation } from "react-i18next";
 import {
   Card,
   CardContent,
@@ -10,12 +13,14 @@ import { Package, FileText, History, BarChart3 } from "lucide-react";
 import Link from "next/link";
 
 export default function Home() {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-primary">Tableau de bord</h1>
+        <h1 className="text-3xl font-bold text-primary">{t('dashboardTitle')}</h1>
         <p className="text-muted-foreground">
-          Gérez vos produits et générez des étiquettes pharmaceutiques
+          {t('dashboardSubtitle')}
         </p>
       </div>
 
@@ -23,7 +28,7 @@ export default function Home() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Produits enregistrés
+              {t('registeredProducts')}
             </CardTitle>
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
@@ -36,7 +41,7 @@ export default function Home() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Étiquettes générées
+              {t('generatedLabels')}
             </CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
@@ -48,7 +53,7 @@ export default function Home() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Impressions</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('prints')}</CardTitle>
             <History className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -59,7 +64,7 @@ export default function Home() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Codes générés</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('generatedCodes')}</CardTitle>
             <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -72,16 +77,16 @@ export default function Home() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Actions rapides</CardTitle>
+            <CardTitle>{t('quickActions')}</CardTitle>
             <CardDescription>
-              Accédez rapidement aux fonctionnalités principales
+              {t('quickActionsDesc')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             <Button asChild className="w-full justify-start">
               <Link href="/generate">
                 <FileText className="mr-2 h-4 w-4" />
-                Générer une étiquette
+                {t('generateLabel')}
               </Link>
             </Button>
             <Button
@@ -91,7 +96,7 @@ export default function Home() {
             >
               <Link href="/web/products">
                 <Package className="mr-2 h-4 w-4" />
-                Gérer les produits
+                {t('manageProducts')}
               </Link>
             </Button>
             <Button
@@ -101,7 +106,7 @@ export default function Home() {
             >
               <Link href="/web/history">
                 <History className="mr-2 h-4 w-4" />
-                Voir l'historique
+                {t('viewHistory')}
               </Link>
             </Button>
           </CardContent>
@@ -109,8 +114,8 @@ export default function Home() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Activité récente</CardTitle>
-            <CardDescription>Dernières actions effectuées</CardDescription>
+            <CardTitle>{t('recentActivity')}</CardTitle>
+            <CardDescription>{t('recentActivityDesc')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -118,10 +123,10 @@ export default function Home() {
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                 <div className="flex-1">
                   <p className="text-sm">
-                    Étiquette QUININE HYDROCHLORIDE générée
+                    {t('labelGenerated')} QUININE HYDROCHLORIDE
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    Il y a 2 heures
+                    {t('hoursAgo', { count: 2 })}
                   </p>
                 </div>
               </div>
@@ -130,7 +135,7 @@ export default function Home() {
                 <div className="flex-1">
                   <p className="text-sm">Nouveau produit ajouté</p>
                   <p className="text-xs text-muted-foreground">
-                    Il y a 4 heures
+                    {t('hoursAgo', { count: 4 })}
                   </p>
                 </div>
               </div>
