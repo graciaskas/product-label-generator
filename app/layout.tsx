@@ -21,18 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Suspense fallback={<div>Loading...</div>}>
-            <main className="">{children}</main>
-          </Suspense>
-        </ThemeProvider>
-
-        <Analytics />
+        <main className="">{children}</main>
       </body>
     </html>
   );
