@@ -25,7 +25,7 @@ export function LabelPreview({
   productData,
   generatedCode,
 }: LabelPreviewProps) {
-  const [copies, setCopies] = useState("1");
+  const [copies, setCopies] = useState("4");
   const [isGenerating, setIsGenerating] = useState(false);
   const [barcodeDataURL, setBarcodeDataURL] = useState<string>("");
   const { toast } = useToast();

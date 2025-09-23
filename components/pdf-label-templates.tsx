@@ -7,19 +7,29 @@ const styles = StyleSheet.create({
   page: {
     flexDirection: 'column',
     backgroundColor: '#FFFFFF',
-    padding: 20,
+    padding: 10,
+    flexWrap: 'wrap',
+  },
+  pageGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
   },
   label: {
-    marginBottom: 20,
+    width: '48%',
+    marginBottom: 10,
     border: '2pt solid #22c55e',
     backgroundColor: '#FFFFFF',
     pageBreakInside: 'avoid',
+    minHeight: 350,
   },
   // Template 1 Styles
   template1Header: {
     backgroundColor: '#22c55e',
     color: '#FFFFFF',
-    padding: 8,
+    padding: 4,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
@@ -28,87 +38,87 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   template1HeaderRight: {
-    width: 60,
-    height: 60,
+    width: 40,
+    height: 40,
     border: '2pt solid #FFFFFF',
-    borderRadius: 30,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
   },
   template1Title: {
     backgroundColor: '#22c55e',
     color: '#FFFFFF',
-    padding: 8,
-    marginBottom: 8,
+    padding: 4,
+    marginBottom: 4,
   },
   template1TitleText: {
     backgroundColor: '#FFFFFF',
     color: '#22c55e',
     borderRadius: 20,
-    padding: 8,
+    padding: 4,
     textAlign: 'center',
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: 'bold',
   },
   template1Content: {
-    padding: 16,
+    padding: 8,
   },
   template1Row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 4,
+    marginBottom: 2,
   },
   template1Label: {
-    fontSize: 10,
+    fontSize: 8,
     fontWeight: 'bold',
   },
   template1Value: {
-    fontSize: 10,
+    fontSize: 8,
   },
   template1Storage: {
     color: '#dc2626',
     fontWeight: 'bold',
     textAlign: 'center',
-    padding: 8,
-    fontSize: 10,
+    padding: 4,
+    fontSize: 8,
   },
   template1Manufacturer: {
-    marginTop: 8,
+    marginTop: 4,
   },
   template1ManufacturerName: {
     color: '#22c55e',
     fontWeight: 'bold',
-    fontSize: 10,
+    fontSize: 8,
   },
   template1Shipping: {
-    marginTop: 16,
-    paddingTop: 16,
+    marginTop: 8,
+    paddingTop: 8,
   },
   // Template 2 Styles
   template2Header: {
     border: '4pt solid #22c55e',
-    padding: 12,
-    marginBottom: 8,
+    padding: 6,
+    marginBottom: 4,
     textAlign: 'center',
   },
   template2Title: {
     color: '#dc2626',
     fontWeight: 'bold',
-    fontSize: 16,
-    marginBottom: 4,
+    fontSize: 12,
+    marginBottom: 2,
   },
   template2Subtitle: {
     fontWeight: 'bold',
-    fontSize: 10,
+    fontSize: 8,
   },
   template2Info: {
     backgroundColor: '#f3f4f6',
-    padding: 12,
-    marginBottom: 8,
+    padding: 6,
+    marginBottom: 4,
   },
   template2Content: {
     flexDirection: 'row',
-    marginBottom: 8,
+    marginBottom: 4,
   },
   template2Left: {
     flex: 2,
@@ -120,44 +130,44 @@ const styles = StyleSheet.create({
   template2Section: {
     backgroundColor: '#22c55e',
     color: '#FFFFFF',
-    padding: 8,
-    marginBottom: 12,
+    padding: 4,
+    marginBottom: 6,
   },
   template2SectionTitle: {
     fontWeight: 'bold',
-    fontSize: 10,
-    marginBottom: 4,
+    fontSize: 8,
+    marginBottom: 2,
   },
   template2SectionContent: {
-    fontSize: 8,
+    fontSize: 6,
   },
   template2NetWeight: {
     textAlign: 'center',
-    marginBottom: 16,
+    marginBottom: 8,
   },
   template2NetWeightLabel: {
     color: '#22c55e',
     fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: 14,
   },
   template2NetWeightValue: {
     color: '#22c55e',
     fontWeight: 'bold',
-    fontSize: 32,
+    fontSize: 20,
   },
   template2Warning: {
     textAlign: 'center',
-    marginBottom: 16,
+    marginBottom: 8,
   },
   template2WarningText: {
     color: '#dc2626',
     fontWeight: 'bold',
-    fontSize: 16,
-    marginBottom: 8,
+    fontSize: 12,
+    marginBottom: 4,
   },
   template2WarningIcon: {
-    width: 60,
-    height: 60,
+    width: 40,
+    height: 40,
     border: '4pt solid #dc2626',
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
@@ -167,55 +177,55 @@ const styles = StyleSheet.create({
   template2Footer: {
     backgroundColor: '#22c55e',
     color: '#FFFFFF',
-    padding: 12,
+    padding: 6,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   template2FooterLogo: {
-    width: 60,
-    height: 60,
+    width: 40,
+    height: 40,
     border: '2pt solid #FFFFFF',
-    borderRadius: 30,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
   },
   template2FooterInfo: {
     flex: 1,
     textAlign: 'right',
-    fontSize: 8,
+    fontSize: 6,
   },
   // Barcode Styles
   barcodeContainer: {
     textAlign: 'center',
-    marginTop: 16,
-    paddingTop: 16,
+    marginTop: 8,
+    paddingTop: 8,
     borderTop: '2pt solid #cccccc',
   },
   barcodeText: {
     fontFamily: 'Courier',
-    fontSize: 12,
+    fontSize: 8,
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: 4,
   },
   barcodeImage: {
-    width: 300,
-    height: 80,
+    width: 150,
+    height: 40,
     margin: '0 auto',
   },
   // Common Styles
   text: {
-    fontSize: 10,
+    fontSize: 8,
   },
   textBold: {
-    fontSize: 10,
+    fontSize: 8,
     fontWeight: 'bold',
   },
   textSmall: {
-    fontSize: 8,
+    fontSize: 6,
   },
   textLarge: {
-    fontSize: 14,
+    fontSize: 10,
   },
 });
 
@@ -481,30 +491,41 @@ export const LabelPDFDocument: React.FC<PDFLabelProps> = ({
   barcodeDataURL,
   copies,
 }) => {
-  const labels = Array.from({ length: copies }, (_, index) => index);
+  // Group labels into pages of 4
+  const labelsPerPage = 4;
+  const totalPages = Math.ceil(copies / labelsPerPage);
+  const pages = Array.from({ length: totalPages }, (_, pageIndex) => {
+    const startIndex = pageIndex * labelsPerPage;
+    const endIndex = Math.min(startIndex + labelsPerPage, copies);
+    return Array.from({ length: endIndex - startIndex }, (_, labelIndex) => startIndex + labelIndex);
+  });
 
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
-        {labels.map((_, index) => (
-          <View key={index}>
-            {template.id === "template1" && (
-              <Template1PDF
-                productData={productData}
-                generatedCode={generatedCode}
-                barcodeDataURL={barcodeDataURL}
-              />
-            )}
-            {template.id === "template2" && (
-              <Template2PDF
-                productData={productData}
-                generatedCode={generatedCode}
-                barcodeDataURL={barcodeDataURL}
-              />
-            )}
+      {pages.map((pageLabels, pageIndex) => (
+        <Page key={pageIndex} size="A4" style={styles.page}>
+          <View style={styles.pageGrid}>
+            {pageLabels.map((labelIndex) => (
+              <View key={labelIndex} style={styles.label}>
+                {template.id === "template1" && (
+                  <Template1PDF
+                    productData={productData}
+                    generatedCode={generatedCode}
+                    barcodeDataURL={barcodeDataURL}
+                  />
+                )}
+                {template.id === "template2" && (
+                  <Template2PDF
+                    productData={productData}
+                    generatedCode={generatedCode}
+                    barcodeDataURL={barcodeDataURL}
+                  />
+                )}
+              </View>
+            ))}
           </View>
-        ))}
-      </Page>
+        </Page>
+      ))}
     </Document>
   );
 };
