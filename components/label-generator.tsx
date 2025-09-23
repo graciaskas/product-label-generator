@@ -67,9 +67,11 @@ export function LabelGenerator() {
 
   const handleGenerateCode = () => {
     const timestamp = Date.now().toString(36);
-    const name = productData.code.replace(/[^A-Z0-9]/g, "");
-    const gen_code = `${name}-${timestamp.toUpperCase()}`;
-    setGeneratedCode(name);
+    const code = productData.code.replace(/[^A-Z0-9]/g, "");
+    const manufacturingDate = productData.manufacturingDate.replace(/-/g, "");
+    const randomSuffix = Math.random().toString(36).substring(2, 6).toUpperCase();
+    const gen_code = `${code}${manufacturingDate.substring(2)}${randomSuffix}`;
+    setGeneratedCode(gen_code);
   };
 
   return (
