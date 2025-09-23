@@ -1,15 +1,44 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Plus, Search, Edit, Trash2, Users, Mail, Phone, Shield, UserCheck, UserX } from "lucide-react"
-import { UserForm } from "@/components/user-form"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Plus,
+  Search,
+  Edit,
+  Trash2,
+  Users,
+  Mail,
+  Phone,
+  Shield,
+  UserCheck,
+  UserX,
+} from "lucide-react";
+import { UserForm } from "@/components/user-form";
 
 // Mock data for users
 const mockUsers = [
@@ -24,7 +53,7 @@ const mockUsers = [
     status: "active",
     lastLogin: "2025-01-15 14:30",
     createdAt: "2024-12-01",
-    avatar: "/placeholder-user.jpg"
+    avatar: "/placeholder-user.jpg",
   },
   {
     id: 2,
@@ -37,7 +66,7 @@ const mockUsers = [
     status: "active",
     lastLogin: "2025-01-15 09:15",
     createdAt: "2024-12-05",
-    avatar: "/placeholder-user.jpg"
+    avatar: "/placeholder-user.jpg",
   },
   {
     id: 3,
@@ -50,7 +79,7 @@ const mockUsers = [
     status: "active",
     lastLogin: "2025-01-14 16:45",
     createdAt: "2024-12-10",
-    avatar: "/placeholder-user.jpg"
+    avatar: "/placeholder-user.jpg",
   },
   {
     id: 4,
@@ -63,65 +92,75 @@ const mockUsers = [
     status: "inactive",
     lastLogin: "2025-01-10 11:20",
     createdAt: "2024-12-15",
-    avatar: "/placeholder-user.jpg"
+    avatar: "/placeholder-user.jpg",
   },
-]
+];
 
 const roleLabels = {
   admin: "Administrateur",
   manager: "Manager",
   supervisor: "Superviseur",
-  operator: "Opérateur"
-}
+  operator: "Opérateur",
+};
 
 const roleColors = {
   admin: "destructive",
   manager: "default",
   supervisor: "secondary",
-  operator: "outline"
-} as const
+  operator: "outline",
+} as const;
 
 export default function UsersPage() {
-  const [users, setUsers] = useState(mockUsers)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [roleFilter, setRoleFilter] = useState("all")
-  const [statusFilter, setStatusFilter] = useState("all")
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
+  const [users, setUsers] = useState(mockUsers);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [roleFilter, setRoleFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
   const filteredUsers = users.filter((user) => {
-    const matchesSearch = 
+    const matchesSearch =
       user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesRole = roleFilter === "all" || user.role === roleFilter
-    const matchesStatus = statusFilter === "all" || user.status === statusFilter
-    return matchesSearch && matchesRole && matchesStatus
-  })
+      user.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesRole = roleFilter === "all" || user.role === roleFilter;
+    const matchesStatus =
+      statusFilter === "all" || user.status === statusFilter;
+    return matchesSearch && matchesRole && matchesStatus;
+  });
 
   const getInitials = (firstName: string, lastName: string) => {
-    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
-  }
+    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+  };
 
   const toggleUserStatus = (userId: number) => {
-    setUsers(users.map(user => 
-      user.id === userId 
-        ? { ...user, status: user.status === "active" ? "inactive" : "active" }
-        : user
-    ))
-  }
+    setUsers(
+      users.map((user) =>
+        user.id === userId
+          ? {
+              ...user,
+              status: user.status === "active" ? "inactive" : "active",
+            }
+          : user
+      )
+    );
+  };
 
   const deleteUser = (userId: number) => {
     if (confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur ?")) {
-      setUsers(users.filter(user => user.id !== userId))
+      setUsers(users.filter((user) => user.id !== userId));
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Gestion des utilisateurs</h1>
-          <p className="text-muted-foreground">Gérez les comptes utilisateurs et leurs permissions</p>
+          <h1 className="text-3xl font-bold text-primary">
+            Gestion des utilisateurs
+          </h1>
+          <p className="text-muted-foreground">
+            Gérez les comptes utilisateurs et leurs permissions
+          </p>
         </div>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
@@ -132,7 +171,7 @@ export default function UsersPage() {
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Ajouter un nouvel utilisateur</DialogTitle>
+              <DialogTitle>Ajouter un utilisateur</DialogTitle>
             </DialogHeader>
             <UserForm onClose={() => setIsAddDialogOpen(false)} />
           </DialogContent>
@@ -172,7 +211,8 @@ export default function UsersPage() {
           </SelectContent>
         </Select>
         <Badge variant="secondary">
-          {filteredUsers.length} utilisateur{filteredUsers.length > 1 ? "s" : ""}
+          {filteredUsers.length} utilisateur
+          {filteredUsers.length > 1 ? "s" : ""}
         </Badge>
       </div>
 
@@ -180,14 +220,21 @@ export default function UsersPage() {
         {filteredUsers.map((user) => (
           <Card key={user.id} className="hover:shadow-md transition-shadow">
             <CardHeader className="pb-3">
+              <CardTitle className="text-lg">
+                {user.firstName} {user.lastName}
+              </CardTitle>
               <div className="flex items-start justify-between">
                 <div className="flex items-center space-x-3">
                   <Avatar className="h-12 w-12">
-                    <AvatarImage src={user.avatar} alt={`${user.firstName} ${user.lastName}`} />
-                    <AvatarFallback>{getInitials(user.firstName, user.lastName)}</AvatarFallback>
+                    <AvatarImage
+                      src={user.avatar}
+                      alt={`${user.firstName} ${user.lastName}`}
+                    />
+                    <AvatarFallback>
+                      {getInitials(user.firstName, user.lastName)}
+                    </AvatarFallback>
                   </Avatar>
                   <div>
-                    <CardTitle className="text-lg">{user.firstName} {user.lastName}</CardTitle>
                     <CardDescription>{user.department}</CardDescription>
                   </div>
                 </div>
@@ -195,8 +242,8 @@ export default function UsersPage() {
                   <Button variant="ghost" size="sm">
                     <Edit className="h-4 w-4" />
                   </Button>
-                  <Button 
-                    variant="ghost" 
+                  <Button
+                    variant="ghost"
                     size="sm"
                     onClick={() => toggleUserStatus(user.id)}
                   >
@@ -206,8 +253,8 @@ export default function UsersPage() {
                       <UserCheck className="h-4 w-4" />
                     )}
                   </Button>
-                  <Button 
-                    variant="ghost" 
+                  <Button
+                    variant="ghost"
                     size="sm"
                     onClick={() => deleteUser(user.id)}
                   >
@@ -219,15 +266,19 @@ export default function UsersPage() {
             <CardContent>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <Badge variant={roleColors[user.role as keyof typeof roleColors]}>
+                  <Badge
+                    variant={roleColors[user.role as keyof typeof roleColors]}
+                  >
                     <Shield className="mr-1 h-3 w-3" />
                     {roleLabels[user.role as keyof typeof roleLabels]}
                   </Badge>
-                  <Badge variant={user.status === "active" ? "default" : "secondary"}>
+                  <Badge
+                    variant={user.status === "active" ? "default" : "secondary"}
+                  >
                     {user.status === "active" ? "Actif" : "Inactif"}
                   </Badge>
                 </div>
-                
+
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center text-muted-foreground">
                     <Mail className="mr-2 h-3 w-3" />
@@ -254,12 +305,16 @@ export default function UsersPage() {
       {filteredUsers.length === 0 && (
         <div className="text-center py-12">
           <Users className="mx-auto h-12 w-12 text-muted-foreground" />
-          <h3 className="mt-4 text-lg font-semibold">Aucun utilisateur trouvé</h3>
+          <h3 className="mt-4 text-lg font-semibold">
+            Aucun utilisateur trouvé
+          </h3>
           <p className="text-muted-foreground">
-            {searchTerm ? "Essayez de modifier votre recherche" : "Commencez par ajouter votre premier utilisateur"}
+            {searchTerm
+              ? "Essayez de modifier votre recherche"
+              : "Commencez par ajouter votre premier utilisateur"}
           </p>
         </div>
       )}
     </div>
-  )
+  );
 }

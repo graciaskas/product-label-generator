@@ -1,13 +1,25 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Plus, Search, Edit, Trash2, Package } from "lucide-react"
-import { ProductForm } from "@/components/product-form"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Plus, Search, Edit, Trash2, Package } from "lucide-react";
+import { ProductForm } from "@/components/product-form";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 // Mock data for products
 const mockProducts = [
@@ -38,25 +50,29 @@ const mockProducts = [
     status: "inactive",
     lastUpdated: "2025-01-10",
   },
-]
+];
 
 export default function ProductsPage() {
-  const [products, setProducts] = useState(mockProducts)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
+  const [products, setProducts] = useState(mockProducts);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
   const filteredProducts = products.filter(
     (product) =>
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.code.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
+      product.code.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Gestion des produits</h1>
-          <p className="text-muted-foreground">Gérez votre catalogue de produits pharmaceutiques</p>
+          <h1 className="text-3xl font-bold text-primary">
+            Gestion des produits
+          </h1>
+          <p className="text-muted-foreground">
+            Gérez votre catalogue de produits pharmaceutiques
+          </p>
         </div>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
@@ -85,7 +101,8 @@ export default function ProductsPage() {
           />
         </div>
         <Badge variant="secondary">
-          {filteredProducts.length} produit{filteredProducts.length > 1 ? "s" : ""}
+          {filteredProducts.length} produit
+          {filteredProducts.length > 1 ? "s" : ""}
         </Badge>
       </div>
 
@@ -96,7 +113,11 @@ export default function ProductsPage() {
               <div className="flex items-start justify-between">
                 <div className="flex items-center space-x-2">
                   <Package className="h-5 w-5 text-green-600" />
-                  <Badge variant={product.status === "active" ? "default" : "secondary"}>
+                  <Badge
+                    variant={
+                      product.status === "active" ? "default" : "secondary"
+                    }
+                  >
                     {product.status === "active" ? "Actif" : "Inactif"}
                   </Badge>
                 </div>
@@ -116,15 +137,21 @@ export default function ProductsPage() {
               <div className="space-y-2">
                 <div>
                   <p className="text-sm font-medium">Fabricant</p>
-                  <p className="text-sm text-muted-foreground">{product.manufacturer}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {product.manufacturer}
+                  </p>
                 </div>
                 <div>
                   <p className="text-sm font-medium">Catégorie</p>
-                  <p className="text-sm text-muted-foreground">{product.category}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {product.category}
+                  </p>
                 </div>
                 <div>
                   <p className="text-sm font-medium">Dernière mise à jour</p>
-                  <p className="text-sm text-muted-foreground">{product.lastUpdated}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {product.lastUpdated}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -137,10 +164,12 @@ export default function ProductsPage() {
           <Package className="mx-auto h-12 w-12 text-muted-foreground" />
           <h3 className="mt-4 text-lg font-semibold">Aucun produit trouvé</h3>
           <p className="text-muted-foreground">
-            {searchTerm ? "Essayez de modifier votre recherche" : "Commencez par ajouter votre premier produit"}
+            {searchTerm
+              ? "Essayez de modifier votre recherche"
+              : "Commencez par ajouter votre premier produit"}
           </p>
         </div>
       )}
     </div>
-  )
+  );
 }

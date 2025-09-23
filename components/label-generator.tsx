@@ -1,51 +1,52 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { TemplateSelector } from "./template-selector"
-import { ProductForm } from "./product-form"
-import { LabelPreview } from "./label-preview"
-import { CodeGenerator } from "./code-generator"
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TemplateSelector } from "./template-selector";
+import { ProductForm } from "./product-form";
+import { LabelPreview } from "./label-preview";
+import { CodeGenerator } from "./code-generator";
 
 export interface ProductData {
-  productName: string
-  productCode: string
-  manufacturingDate: string
-  expiryDate: string
-  grossWeight: string
-  netWeight: string
-  exportLot: string
-  casNumber?: string
-  origin?: string
-  uses?: string[]
-  storageConditions: string
-  hazardStatements?: string[]
-  precautionaryStatements?: string[]
+  name: string;
+  code: string;
+  manufacturingDate: string;
+  expiryDate: string;
+  grossWeight: string;
+  netWeight: string;
+  exportLot: string;
+  casNumber?: string;
+  origin?: string;
+  uses?: string[];
+  storageConditions: string;
+  hazardStatements?: string[];
+  precautionaryStatements?: string[];
   manufacturer: {
-    name: string
-    address: string
-    city: string
-    country: string
-    website: string
-    phone?: string
-    email?: string
-  }
+    name: string;
+    address: string;
+    city: string;
+    country: string;
+    website: string;
+    phone?: string;
+    email?: string;
+  };
 }
 
 export interface LabelTemplate {
-  id: string
-  name: string
-  description: string
-  imageUrl: string
-  type: "basic" | "detailed"
+  id: string;
+  name: string;
+  description: string;
+  imageUrl: string;
+  type: "basic" | "detailed";
 }
 
 export function LabelGenerator() {
-  const [selectedTemplate, setSelectedTemplate] = useState<LabelTemplate | null>(null)
+  const [selectedTemplate, setSelectedTemplate] =
+    useState<LabelTemplate | null>(null);
   const [productData, setProductData] = useState<ProductData>({
-    productName: "",
-    productCode: "",
+    name: "",
+    code: "",
     manufacturingDate: "",
     expiryDate: "",
     grossWeight: "",
@@ -61,15 +62,15 @@ export function LabelGenerator() {
       phone: "+(243) 999 455 668",
       email: "pk.kivu@pharmakina.com",
     },
-  })
-  const [generatedCode, setGeneratedCode] = useState<string>("")
+  });
+  const [generatedCode, setGeneratedCode] = useState<string>("");
 
   const handleGenerateCode = () => {
-    const timestamp = Date.now().toString(36)
-    const productCode = productData.productCode.replace(/[^A-Z0-9]/g, "")
-    const code = `${productCode}-${timestamp.toUpperCase()}`
-    setGeneratedCode(code)
-  }
+    const timestamp = Date.now().toString(36);
+    const name = productData.code.replace(/[^A-Z0-9]/g, "");
+    const gen_code = `${name}-${timestamp.toUpperCase()}`;
+    setGeneratedCode(name);
+  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -87,7 +88,10 @@ export function LabelGenerator() {
               </TabsList>
 
               <TabsContent value="template" className="space-y-4">
-                <TemplateSelector selectedTemplate={selectedTemplate} onTemplateSelect={setSelectedTemplate} />
+                <TemplateSelector
+                  selectedTemplate={selectedTemplate}
+                  onTemplateSelect={setSelectedTemplate}
+                />
               </TabsContent>
 
               <TabsContent value="product" className="space-y-4">
@@ -116,10 +120,14 @@ export function LabelGenerator() {
             <CardTitle>Aperçu de l'Étiquette</CardTitle>
           </CardHeader>
           <CardContent>
-            <LabelPreview template={selectedTemplate} productData={productData} generatedCode={generatedCode} />
+            <LabelPreview
+              template={selectedTemplate}
+              productData={productData}
+              generatedCode={generatedCode}
+            />
           </CardContent>
         </Card>
       </div>
     </div>
-  )
+  );
 }

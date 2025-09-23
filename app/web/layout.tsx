@@ -1,37 +1,42 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { GeistSans } from "geist/font/sans"
-import { GeistMono } from "geist/font/mono"
-import { Analytics } from "@vercel/analytics/next"
-import { SidebarProvider } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/components/app-sidebar"
-import { Suspense } from "react"
-import "../globals.css"
+import type React from "react";
+import { Analytics } from "@vercel/analytics/next";
+import { SidebarHeader, SidebarProvider } from "@/components/ui/sidebar";
+import AuthProvider from "@/providers/AuthProvider";
+import { AppSidebar } from "@/components/app-sidebar";
+import { Suspense } from "react";
+import { Package, User2Icon } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "Pharmakina eLabelling",
-  description: "Accédez au générateur d'étiquettes pharmaceutiques",
-  authors: [{name:"Gracias Kasongo"}],
-}
-
-export default function RootLayout({
+export default function WebLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
-        <SidebarProvider>
-          <Suspense fallback={<div>Loading...</div>}>
-            <div className="flex min-h-screen">
-              <AppSidebar />
-              <main className="flex-1 p-6">{children}</main>
-            </div>
-          </Suspense>
-        </SidebarProvider>
-        <Analytics />
-      </body>
-    </html>
-  )
+    <AuthProvider>
+      <SidebarProvider>
+        <Suspense fallback={<div>Loading...</div>}>
+          <div className="flex min-h-screen w-full">
+            <AppSidebar />
+            <main className="flex-1 ">
+              <SidebarHeader className="border-b px-6 py-4 h-[81px]">
+                <div className="flex justify-end items-center gap-2">
+                  <div
+                    style={{ backgroundColor: "oklch(40.40% 0.042 160.33)" }}
+                    className="w-8 h-8  rounded-lg flex items-center justify-center"
+                  >
+                    <User2Icon className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="font-semibold text-lg">Gracias Kasongo</h2>
+                  </div>
+                </div>
+              </SidebarHeader>
+              <div className="p-6">{children}</div>
+            </main>
+          </div>
+        </Suspense>
+      </SidebarProvider>
+      <Analytics />
+    </AuthProvider>
+  );
 }

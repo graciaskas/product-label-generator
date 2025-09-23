@@ -1,46 +1,48 @@
-"use client"
-
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Eye, EyeOff, Package, AlertCircle } from "lucide-react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
+"use client";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Eye, EyeOff, Package, AlertCircle } from "lucide-react";
+import Link from "next/link";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState("")
-  const router = useRouter()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError("")
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
 
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      // Mock authentication - in real app, this would be an API call
-      if (email === "admin@pharmakina.com" && password === "admin123") {
-        // Store auth token (in real app, use proper auth)
-        localStorage.setItem("auth_token", "mock_token")
-        router.push("/")
-      } else {
-        setError("Email ou mot de passe incorrect")
-      }
-    } catch (err) {
-      setError("Une erreur s'est produite lors de la connexion")
-    } finally {
-      setIsLoading(false)
-    }
-  }
+    signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    })
+      .then((res) => {
+        setIsLoading(false);
+        console.log(res?.ok);
+
+        if (res?.ok) {
+          router.push("/web");
+        } else {
+          setError(res.error);
+        }
+      })
+      .catch((e) => {
+        console.log(e.messag);
+        setIsLoading(false);
+      });
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -52,7 +54,7 @@ export default function LoginPage() {
             </div>
           </div>
           <h2 className="mt-6 text-2xl font-bold text-gray-900">
-           Pharmakina eLabelling
+            Pharmakina eLabelling
           </h2>
           <p className="mt-2 text-sm text-gray-600">
             Accédez au générateur d'étiquettes pharmaceutiques
@@ -116,7 +118,10 @@ export default function LoginPage() {
 
               <div className="flex items-center justify-between">
                 <div className="text-sm">
-                  <Link href="/auth/forgot-password" className="text-green-600 hover:text-green-500">
+                  <Link
+                    href="/forgot-password"
+                    className="text-green-600 hover:text-green-500"
+                  >
                     Mot de passe oublié ?
                   </Link>
                 </div>
@@ -126,24 +131,27 @@ export default function LoginPage() {
                 {isLoading ? "Connexion..." : "Se connecter"}
               </Button>
 
-              <div className="text-center">
+              {/* <div className="text-center">
                 <p className="text-sm text-gray-600">
                   Pas encore de compte ?{" "}
-                  <Link href="/auth/signup" className="text-green-600 hover:text-green-500 font-medium">
+                  <Link
+                    href="/signup"
+                    className="text-green-600 hover:text-green-500 font-medium"
+                  >
                     Créer un compte
                   </Link>
                 </p>
-              </div>
+              </div> */}
             </form>
           </CardContent>
         </Card>
 
-        <div className="text-center">
+        {/* <div className="text-center">
           <p className="text-xs text-gray-500">
             Compte de démonstration : admin@pharmakina.com / admin123
           </p>
-        </div>
+        </div> */}
       </div>
     </div>
-  )
+  );
 }

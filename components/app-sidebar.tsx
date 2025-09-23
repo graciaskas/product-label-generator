@@ -1,8 +1,16 @@
-"use client"
+"use client";
 
-import { Package, History, Settings, FileText, BarChart3, Home, Users } from "lucide-react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+import {
+  Package,
+  History,
+  Settings,
+  FileText,
+  BarChart3,
+  Home,
+  Users,
+} from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   Sidebar,
   SidebarContent,
@@ -13,59 +21,64 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarHeader,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
 const menuItems = [
   {
     title: "Tableau de bord",
-    url: "/",
+    url: "/web",
     icon: Home,
   },
   {
     title: "Générer étiquettes",
-    url: "/generate",
+    url: "/web/generate",
     icon: FileText,
   },
   {
     title: "Gestion produits",
-    url: "/products",
+    url: "/web/products",
     icon: Package,
   },
   {
     title: "Utilisateurs",
-    url: "/users",
+    url: "/web/users",
     icon: Users,
   },
   {
     title: "Historique",
-    url: "/history",
+    url: "/web/history",
     icon: History,
   },
   {
     title: "Statistiques",
-    url: "/stats",
+    url: "/web/stats",
     icon: BarChart3,
   },
   {
     title: "Paramètres",
-    url: "/settings",
+    url: "/web/settings",
     icon: Settings,
   },
-]
+];
 
 export function AppSidebar() {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   return (
     <Sidebar>
       <SidebarHeader className="border-b px-6 py-4">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
+          <div
+            style={{ backgroundColor: "oklch(40.40% 0.042 160.33)" }}
+            className="w-8 h-8  rounded-lg flex items-center justify-center"
+          >
             <Package className="w-4 h-4 text-white" />
           </div>
           <div>
             <h2 className="font-semibold text-lg">PHARMAKINA</h2>
-            <p className="text-sm text-muted-foreground">Générateur d'étiquettes</p>
+            <p className="text-sm text-muted-foreground">
+              Générateur d'étiquettes
+            </p>
           </div>
         </div>
       </SidebarHeader>
@@ -89,5 +102,5 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
     </Sidebar>
-  )
+  );
 }

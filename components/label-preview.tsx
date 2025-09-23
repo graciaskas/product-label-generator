@@ -1,52 +1,69 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Download, Printer, Settings } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
-import { PrintHistoryManager } from "@/lib/print-history"
-import type { ProductData, LabelTemplate } from "./label-generator"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Download, Printer, Settings } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { PrintHistoryManager } from "@/lib/print-history";
+import type { ProductData, LabelTemplate } from "./label-generator";
 
 interface LabelPreviewProps {
-  template: LabelTemplate | null
-  productData: ProductData
-  generatedCode: string
+  template: LabelTemplate | null;
+  productData: ProductData;
+  generatedCode: string;
 }
 
-type ExportFormat = "png" | "pdf" | "svg" | "json"
-type PrintSize = "A4" | "A5" | "label" | "custom"
+type ExportFormat = "png" | "pdf" | "svg" | "json";
+type PrintSize = "A4" | "A5" | "label" | "custom";
 
-export function LabelPreview({ template, productData, generatedCode }: LabelPreviewProps) {
-  const [exportFormat, setExportFormat] = useState<ExportFormat>("png")
-  const [printSize, setPrintSize] = useState<PrintSize>("A4")
-  const [copies, setCopies] = useState("1")
-  const [customWidth, setCustomWidth] = useState("800")
-  const [customHeight, setCustomHeight] = useState("600")
-  const [isExporting, setIsExporting] = useState(false)
-  const [isPrinting, setIsPrinting] = useState(false)
-  const { toast } = useToast()
+export function LabelPreview({
+  template,
+  productData,
+  generatedCode,
+}: LabelPreviewProps) {
+  const [exportFormat, setExportFormat] = useState<ExportFormat>("png");
+  const [printSize, setPrintSize] = useState<PrintSize>("A4");
+  const [copies, setCopies] = useState("1");
+  const [customWidth, setCustomWidth] = useState("800");
+  const [customHeight, setCustomHeight] = useState("600");
+  const [isExporting, setIsExporting] = useState(false);
+  const [isPrinting, setIsPrinting] = useState(false);
+  const { toast } = useToast();
 
   const handlePrint = async () => {
     if (!template || !productData.productName) {
       toast({
         title: "Erreur",
-        description: "Veuillez remplir les informations du produit avant d'imprimer",
+        description:
+          "Veuillez remplir les informations du produit avant d'imprimer",
         variant: "destructive",
-      })
-      return
+      });
+      return;
     }
 
-    setIsPrinting(true)
+    setIsPrinting(true);
 
     try {
-      const printWindow = window.open("", "_blank")
+      const printWindow = window.open("", "_blank");
       if (printWindow) {
-        const labelElement = document.getElementById("label-preview")
+        const labelElement = document.getElementById("label-preview");
         if (labelElement) {
           const printContent = `
             <!DOCTYPE html>
@@ -64,158 +81,168 @@ export function LabelPreview({ template, productData, generatedCode }: LabelPrev
                 </style>
               </head>
               <body>
-                ${Array.from({ length: Number.parseInt(copies) || 1 }, () => labelElement.outerHTML).join("")}
+                ${Array.from(
+                  { length: Number.parseInt(copies) || 1 },
+                  () => labelElement.outerHTML
+                ).join("")}
               </body>
             </html>
-          `
-          printWindow.document.write(printContent)
-          printWindow.document.close()
-          printWindow.print()
+          `;
+          printWindow.document.write(printContent);
+          printWindow.document.close();
+          printWindow.print();
 
           PrintHistoryManager.addEntry({
             productName: productData.productName,
-            productCode: productData.productCode || "N/A",
+            code: productData.code || "N/A",
             template: template.name,
             printedBy: "Admin", // TODO: Get from auth context
             quantity: Number.parseInt(copies) || 1,
             status: "completed",
             barcodeGenerated: generatedCode,
-            printSize: printSize === "custom" ? `${customWidth}x${customHeight}px` : printSize,
-          })
+            printSize:
+              printSize === "custom"
+                ? `${customWidth}x${customHeight}px`
+                : printSize,
+          });
 
           toast({
             title: "Impression réussie",
             description: `${copies} étiquette(s) envoyée(s) à l'imprimante`,
-          })
+          });
         }
       }
     } catch (error) {
       PrintHistoryManager.addEntry({
         productName: productData.productName,
-        productCode: productData.productCode || "N/A",
+        code: productData.code || "N/A",
         template: template.name,
         printedBy: "Admin",
         quantity: Number.parseInt(copies) || 1,
         status: "failed",
         barcodeGenerated: generatedCode,
-        printSize: printSize === "custom" ? `${customWidth}x${customHeight}px` : printSize,
-      })
+        printSize:
+          printSize === "custom"
+            ? `${customWidth}x${customHeight}px`
+            : printSize,
+      });
 
       toast({
         title: "Erreur d'impression",
         description: "Une erreur s'est produite lors de l'impression",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsPrinting(false)
+      setIsPrinting(false);
     }
-  }
+  };
 
   const getStylesForPrintSize = (size: PrintSize) => {
     switch (size) {
       case "A4":
-        return ".label { width: 210mm; height: 297mm; }"
+        return ".label { width: 210mm; height: 297mm; }";
       case "A5":
-        return ".label { width: 148mm; height: 210mm; }"
+        return ".label { width: 148mm; height: 210mm; }";
       case "label":
-        return ".label { width: 100mm; height: 150mm; }"
+        return ".label { width: 100mm; height: 150mm; }";
       case "custom":
-        return `.label { width: ${customWidth}px; height: ${customHeight}px; }`
+        return `.label { width: ${customWidth}px; height: ${customHeight}px; }`;
       default:
-        return ""
+        return "";
     }
-  }
+  };
 
   const handleExport = async () => {
     if (!template || !productData.productName) {
       toast({
         title: "Erreur",
-        description: "Veuillez remplir les informations du produit avant d'exporter",
+        description:
+          "Veuillez remplir les informations du produit avant d'exporter",
         variant: "destructive",
-      })
-      return
+      });
+      return;
     }
 
-    setIsExporting(true)
+    setIsExporting(true);
     try {
-      const labelElement = document.getElementById("label-preview")
-      if (!labelElement) return
+      const labelElement = document.getElementById("label-preview");
+      if (!labelElement) return;
 
       switch (exportFormat) {
         case "png":
-          await exportAsPNG(labelElement)
-          break
+          await exportAsPNG(labelElement);
+          break;
         case "pdf":
-          await exportAsPDF(labelElement)
-          break
+          await exportAsPDF(labelElement);
+          break;
         case "svg":
-          await exportAsSVG(labelElement)
-          break
+          await exportAsSVG(labelElement);
+          break;
         case "json":
-          await exportAsJSON()
-          break
+          await exportAsJSON();
+          break;
       }
 
       PrintHistoryManager.addEntry({
         productName: productData.productName,
-        productCode: productData.productCode || "N/A",
+        code: productData.code || "N/A",
         template: template.name,
         printedBy: "Admin",
         quantity: 1,
         status: "completed",
         barcodeGenerated: generatedCode,
         exportFormat: exportFormat.toUpperCase(),
-      })
+      });
 
       toast({
         title: "Export réussi",
         description: `Étiquette exportée en format ${exportFormat.toUpperCase()}`,
-      })
+      });
     } catch (error) {
       PrintHistoryManager.addEntry({
         productName: productData.productName,
-        productCode: productData.productCode || "N/A",
+        code: productData.code || "N/A",
         template: template.name,
         printedBy: "Admin",
         quantity: 1,
         status: "failed",
         barcodeGenerated: generatedCode,
         exportFormat: exportFormat.toUpperCase(),
-      })
+      });
 
       toast({
         title: "Erreur d'export",
         description: "Une erreur s'est produite lors de l'exportation",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsExporting(false)
+      setIsExporting(false);
     }
-  }
+  };
 
   const exportAsPNG = async (element: HTMLElement) => {
-    const canvas = document.createElement("canvas")
-    const ctx = canvas.getContext("2d")
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
     if (ctx) {
-      const width = Number.parseInt(customWidth) || 800
-      const height = Number.parseInt(customHeight) || 600
-      canvas.width = width
-      canvas.height = height
+      const width = Number.parseInt(customWidth) || 800;
+      const height = Number.parseInt(customHeight) || 600;
+      canvas.width = width;
+      canvas.height = height;
 
-      ctx.fillStyle = "white"
-      ctx.fillRect(0, 0, width, height)
+      ctx.fillStyle = "white";
+      ctx.fillRect(0, 0, width, height);
 
-      ctx.fillStyle = "black"
-      ctx.font = "16px Arial"
-      ctx.fillText(productData.productName || "Produit", 50, 50)
-      ctx.fillText(`Code: ${generatedCode}`, 50, 80)
+      ctx.fillStyle = "black";
+      ctx.font = "16px Arial";
+      ctx.fillText(productData.productName || "Produit", 50, 50);
+      ctx.fillText(`Code: ${generatedCode}`, 50, 80);
 
-      const link = document.createElement("a")
-      link.download = `etiquette-${productData.productCode || "produit"}.png`
-      link.href = canvas.toDataURL()
-      link.click()
+      const link = document.createElement("a");
+      link.download = `etiquette-${productData.code || "produit"}.png`;
+      link.href = canvas.toDataURL();
+      link.click();
     }
-  }
+  };
 
   const exportAsPDF = async (element: HTMLElement) => {
     const pdfContent = `
@@ -223,7 +250,7 @@ export function LabelPreview({ template, productData, generatedCode }: LabelPrev
       ========================
       
       Produit: ${productData.productName}
-      Code: ${productData.productCode}
+      Code: ${productData.code}
       Date de fabrication: ${productData.manufacturingDate}
       Date d'expiration: ${productData.expiryDate}
       Poids net: ${productData.netWeight} Kg
@@ -232,16 +259,16 @@ export function LabelPreview({ template, productData, generatedCode }: LabelPrev
       Fabricant: ${productData.manufacturer.name}
       Adresse: ${productData.manufacturer.address}
       Site web: ${productData.manufacturer.website}
-    `
+    `;
 
-    const blob = new Blob([pdfContent], { type: "text/plain" })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement("a")
-    link.href = url
-    link.download = `etiquette-${productData.productCode || "produit"}.txt`
-    link.click()
-    URL.revokeObjectURL(url)
-  }
+    const blob = new Blob([pdfContent], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `etiquette-${productData.code || "produit"}.txt`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
 
   const exportAsSVG = async (element: HTMLElement) => {
     const svgContent = `
@@ -250,16 +277,16 @@ export function LabelPreview({ template, productData, generatedCode }: LabelPrev
         <text x="50" y="50" fontFamily="Arial" fontSize="20" fill="black">${productData.productName}</text>
         <text x="50" y="80" fontFamily="Arial" fontSize="14" fill="black">Code: ${generatedCode}</text>
       </svg>
-    `
+    `;
 
-    const blob = new Blob([svgContent], { type: "image/svg+xml" })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement("a")
-    link.href = url
-    link.download = `etiquette-${productData.productCode || "produit"}.svg`
-    link.click()
-    URL.revokeObjectURL(url)
-  }
+    const blob = new Blob([svgContent], { type: "image/svg+xml" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `etiquette-${productData.code || "produit"}.svg`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
 
   const exportAsJSON = async () => {
     const jsonData = {
@@ -267,23 +294,27 @@ export function LabelPreview({ template, productData, generatedCode }: LabelPrev
       productData,
       generatedCode,
       exportDate: new Date().toISOString(),
-    }
+    };
 
-    const blob = new Blob([JSON.stringify(jsonData, null, 2)], { type: "application/json" })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement("a")
-    link.href = url
-    link.download = `etiquette-data-${productData.productCode || "produit"}.json`
-    link.click()
-    URL.revokeObjectURL(url)
-  }
+    const blob = new Blob([JSON.stringify(jsonData, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `etiquette-data-${productData.code || "produit"}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
 
   if (!template) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground">Sélectionnez un modèle pour voir l'aperçu</p>
+        <p className="text-muted-foreground">
+          Sélectionnez un modèle pour voir l'aperçu
+        </p>
       </div>
-    )
+    );
   }
 
   return (
@@ -305,7 +336,12 @@ export function LabelPreview({ template, productData, generatedCode }: LabelPrev
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label>Format d'Exportation</Label>
-                  <Select value={exportFormat} onValueChange={(value: ExportFormat) => setExportFormat(value)}>
+                  <Select
+                    value={exportFormat}
+                    onValueChange={(value: ExportFormat) =>
+                      setExportFormat(value)
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -320,14 +356,19 @@ export function LabelPreview({ template, productData, generatedCode }: LabelPrev
 
                 <div className="space-y-2">
                   <Label>Taille d'Impression</Label>
-                  <Select value={printSize} onValueChange={(value: PrintSize) => setPrintSize(value)}>
+                  <Select
+                    value={printSize}
+                    onValueChange={(value: PrintSize) => setPrintSize(value)}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="A4">A4 (210×297mm)</SelectItem>
                       <SelectItem value="A5">A5 (148×210mm)</SelectItem>
-                      <SelectItem value="label">Étiquette (100×150mm)</SelectItem>
+                      <SelectItem value="label">
+                        Étiquette (100×150mm)
+                      </SelectItem>
                       <SelectItem value="custom">Personnalisé</SelectItem>
                     </SelectContent>
                   </Select>
@@ -337,29 +378,51 @@ export function LabelPreview({ template, productData, generatedCode }: LabelPrev
                   <div className="grid grid-cols-2 gap-2">
                     <div className="space-y-2">
                       <Label>Largeur (px)</Label>
-                      <Input value={customWidth} onChange={(e) => setCustomWidth(e.target.value)} />
+                      <Input
+                        value={customWidth}
+                        onChange={(e) => setCustomWidth(e.target.value)}
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label>Hauteur (px)</Label>
-                      <Input value={customHeight} onChange={(e) => setCustomHeight(e.target.value)} />
+                      <Input
+                        value={customHeight}
+                        onChange={(e) => setCustomHeight(e.target.value)}
+                      />
                     </div>
                   </div>
                 )}
 
                 <div className="space-y-2">
                   <Label>Nombre de Copies</Label>
-                  <Input type="number" min="1" max="100" value={copies} onChange={(e) => setCopies(e.target.value)} />
+                  <Input
+                    type="number"
+                    min="1"
+                    max="100"
+                    value={copies}
+                    onChange={(e) => setCopies(e.target.value)}
+                  />
                 </div>
               </div>
             </DialogContent>
           </Dialog>
 
-          <Button variant="outline" size="sm" onClick={handlePrint} disabled={isPrinting}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handlePrint}
+            disabled={isPrinting}
+          >
             <Printer className="h-4 w-4 mr-2" />
             {isPrinting ? "Impression..." : "Imprimer"}
           </Button>
 
-          <Button variant="outline" size="sm" onClick={handleExport} disabled={isExporting}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExport}
+            disabled={isExporting}
+          >
             <Download className="h-4 w-4 mr-2" />
             {isExporting ? "Export..." : "Exporter"}
           </Button>
@@ -368,12 +431,21 @@ export function LabelPreview({ template, productData, generatedCode }: LabelPrev
 
       <Card>
         <CardContent className="p-6">
-          <div id="label-preview" className="bg-white border-2 border-gray-300 p-4 print:border-0 print:p-0">
+          <div
+            id="label-preview"
+            className="bg-white border-2 border-gray-300 p-4 print:border-0 print:p-0"
+          >
             {template.id === "template1" && (
-              <Template1Preview productData={productData} generatedCode={generatedCode} />
+              <Template1Preview
+                productData={productData}
+                generatedCode={generatedCode}
+              />
             )}
             {template.id === "template2" && (
-              <Template2Preview productData={productData} generatedCode={generatedCode} />
+              <Template2Preview
+                productData={productData}
+                generatedCode={generatedCode}
+              />
             )}
           </div>
         </CardContent>
@@ -386,11 +458,14 @@ export function LabelPreview({ template, productData, generatedCode }: LabelPrev
         <CardContent className="text-sm space-y-2">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <span className="font-semibold">Format:</span> {exportFormat.toUpperCase()}
+              <span className="font-semibold">Format:</span>{" "}
+              {exportFormat.toUpperCase()}
             </div>
             <div>
               <span className="font-semibold">Taille:</span>{" "}
-              {printSize === "custom" ? `${customWidth}×${customHeight}px` : printSize}
+              {printSize === "custom"
+                ? `${customWidth}×${customHeight}px`
+                : printSize}
             </div>
             <div>
               <span className="font-semibold">Copies:</span> {copies}
@@ -402,22 +477,30 @@ export function LabelPreview({ template, productData, generatedCode }: LabelPrev
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
 
-function Template1Preview({ productData, generatedCode }: { productData: ProductData; generatedCode: string }) {
+function Template1Preview({
+  productData,
+  generatedCode,
+}: {
+  productData: ProductData;
+  generatedCode: string;
+}) {
   const formatDate = (dateString: string) => {
-    if (!dateString) return ""
-    const [year, month] = dateString.split("-")
-    return `${month}/${year}`
-  }
+    if (!dateString) return "";
+    const [year, month] = dateString.split("-");
+    return `${month}/${year}`;
+  };
 
   return (
     <div className="w-full max-w-2xl mx-auto bg-white text-black font-sans text-sm">
       <div className="bg-green-500 text-white p-2 mb-1">
         <div className="flex justify-between items-start">
           <div>
-            <div className="font-bold text-xs">{productData.manufacturer.name}</div>
+            <div className="font-bold text-xs">
+              {productData.manufacturer.name}
+            </div>
             <div className="text-xs">{productData.manufacturer.address}</div>
             <div className="text-xs">{productData.manufacturer.country}</div>
           </div>
@@ -443,11 +526,13 @@ function Template1Preview({ productData, generatedCode }: { productData: Product
           <div>
             <div className="flex justify-between">
               <span className="font-bold">PRODUCT CODE/LOT N°</span>
-              <span>: {productData.productCode || "HC25/L0000"}</span>
+              <span>: {productData.code || "HC25/L0000"}</span>
             </div>
             <div className="flex justify-between">
               <span className="ml-4">- Manufacturing date</span>
-              <span>: {formatDate(productData.manufacturingDate) || "07/2025"}</span>
+              <span>
+                : {formatDate(productData.manufacturingDate) || "07/2025"}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="ml-4">- Expiry date</span>
@@ -469,13 +554,16 @@ function Template1Preview({ productData, generatedCode }: { productData: Product
         </div>
 
         <div className="text-red-600 font-bold text-center py-2">
-          Storage conditions : {productData.storageConditions || "Protect from light and humidity."}
+          Storage conditions :{" "}
+          {productData.storageConditions || "Protect from light and humidity."}
         </div>
 
         <div className="space-y-1">
           <div>
             <span className="font-bold">Manufacturer: </span>
-            <span className="text-green-600 font-bold">{productData.manufacturer.name}</span>
+            <span className="text-green-600 font-bold">
+              {productData.manufacturer.name}
+            </span>
           </div>
           <div className="ml-16">{productData.manufacturer.address}</div>
           <div className="ml-16">{productData.manufacturer.country}</div>
@@ -491,15 +579,23 @@ function Template1Preview({ productData, generatedCode }: { productData: Product
 
         {generatedCode && (
           <div className="text-center pt-4 border-t-2 border-gray-300">
-            <div className="font-bold">Code de Traçabilité: {generatedCode}</div>
+            <div className="font-bold">
+              Code de Traçabilité: {generatedCode}
+            </div>
           </div>
         )}
       </div>
     </div>
-  )
+  );
 }
 
-function Template2Preview({ productData, generatedCode }: { productData: ProductData; generatedCode: string }) {
+function Template2Preview({
+  productData,
+  generatedCode,
+}: {
+  productData: ProductData;
+  generatedCode: string;
+}) {
   return (
     <div className="w-full max-w-2xl mx-auto bg-white text-black font-sans text-sm">
       <div className="border-4 border-green-500 p-3 mb-2">
@@ -507,8 +603,12 @@ function Template2Preview({ productData, generatedCode }: { productData: Product
           <div className="text-red-600 font-bold text-lg mb-1">
             {productData.productName || "QUININE HYDROCHLORIDE DIHYDRATE"}
           </div>
-          <div className="font-bold">CAS: {productData.casNumber || "6119-47-7"}</div>
-          <div className="font-bold">{productData.origin || "POWDER OF NATURAL ORIGIN"}</div>
+          <div className="font-bold">
+            CAS: {productData.casNumber || "6119-47-7"}
+          </div>
+          <div className="font-bold">
+            {productData.origin || "POWDER OF NATURAL ORIGIN"}
+          </div>
           <div className="text-sm italic">(Very bitter taste)</div>
         </div>
       </div>
@@ -534,7 +634,8 @@ function Template2Preview({ productData, generatedCode }: { productData: Product
         <div>
           <span className="font-bold">STORAGE CONDITIONS:</span>
           <span className="ml-2">
-            {productData.storageConditions || "ambient conditions not exceeding 30°C-70% RH"}
+            {productData.storageConditions ||
+              "ambient conditions not exceeding 30°C-70% RH"}
           </span>
         </div>
       </div>
@@ -557,7 +658,9 @@ function Template2Preview({ productData, generatedCode }: { productData: Product
           </div>
 
           <div className="bg-green-500 text-white p-2">
-            <div className="font-bold text-sm">PRECAUTIONARY STATEMENT PREVENTION:</div>
+            <div className="font-bold text-sm">
+              PRECAUTIONARY STATEMENT PREVENTION:
+            </div>
             <div className="text-xs space-y-1">
               {(
                 productData.precautionaryStatements || [
@@ -581,10 +684,17 @@ function Template2Preview({ productData, generatedCode }: { productData: Product
           </div>
 
           <div className="bg-green-500 text-white p-2">
-            <div className="font-bold text-sm">PRECAUTIONARY STATEMENT RESPONSE:</div>
+            <div className="font-bold text-sm">
+              PRECAUTIONARY STATEMENT RESPONSE:
+            </div>
             <div className="text-xs space-y-1">
-              <div>P301+P330+P331: If swallowed, rinse mouth. Do NOT induce vomiting.</div>
-              <div>P302+P352: If on skin: Wash with plenty of soap and water.</div>
+              <div>
+                P301+P330+P331: If swallowed, rinse mouth. Do NOT induce
+                vomiting.
+              </div>
+              <div>
+                P302+P352: If on skin: Wash with plenty of soap and water.
+              </div>
             </div>
           </div>
         </div>
@@ -592,7 +702,9 @@ function Template2Preview({ productData, generatedCode }: { productData: Product
         <div className="space-y-4">
           <div className="text-center">
             <div className="text-green-600 font-bold text-2xl">Net weight</div>
-            <div className="text-green-600 font-bold text-4xl">{productData.netWeight || "25"} Kg</div>
+            <div className="text-green-600 font-bold text-4xl">
+              {productData.netWeight || "25"} Kg
+            </div>
           </div>
 
           <div className="text-center">
@@ -613,10 +725,16 @@ function Template2Preview({ productData, generatedCode }: { productData: Product
             </div>
           </div>
           <div className="text-right text-xs">
-            <div className="font-bold">Manufactured by {productData.manufacturer.name}</div>
+            <div className="font-bold">
+              Manufactured by {productData.manufacturer.name}
+            </div>
             <div>{productData.manufacturer.address}</div>
-            {productData.manufacturer.phone && <div>Tel. {productData.manufacturer.phone}</div>}
-            {productData.manufacturer.email && <div>E-Mail : {productData.manufacturer.email}</div>}
+            {productData.manufacturer.phone && (
+              <div>Tel. {productData.manufacturer.phone}</div>
+            )}
+            {productData.manufacturer.email && (
+              <div>E-Mail : {productData.manufacturer.email}</div>
+            )}
             <div className="font-bold">{productData.manufacturer.country}</div>
           </div>
         </div>
@@ -628,5 +746,5 @@ function Template2Preview({ productData, generatedCode }: { productData: Product
         </div>
       )}
     </div>
-  )
+  );
 }
