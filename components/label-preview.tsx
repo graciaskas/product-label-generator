@@ -23,6 +23,7 @@ import { Download, Printer, Settings } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { PrintHistoryManager } from "@/lib/print-history";
 import type { ProductData, LabelTemplate } from "./label-generator";
+import { generateBarcodeDataURL } from "@/lib/barcode-generator";
 
 interface LabelPreviewProps {
   template: LabelTemplate | null;
@@ -45,7 +46,16 @@ export function LabelPreview({
   const [customHeight, setCustomHeight] = useState("600");
   const [isExporting, setIsExporting] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
+  const [barcodeDataURL, setBarcodeDataURL] = useState<string>("");
   const { toast } = useToast();
+
+  // Generate barcode when generatedCode changes
+  useEffect(() => {
+    if (generatedCode) {
+      const dataURL = generateBarcodeDataURL(generatedCode);
+      setBarcodeDataURL(dataURL);
+    }
+  }, [generatedCode]);
 
   const handlePrint = async () => {
     if (!template || !productData.name) {
@@ -73,9 +83,15 @@ export function LabelPreview({
                 <style>
                   body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
                   .label { page-break-after: always; margin-bottom: 20px; }
+                  .barcode-container { text-align: center; margin-top: 10px; padding: 10px; border-top: 2px solid #ccc; }
+                  .barcode-image { max-width: 300px; height: auto; }
+                  .barcode-text { font-family: monospace; font-size: 14px; font-weight: bold; margin-top: 5px; }
                   @media print {
                     body { margin: 0; padding: 0; }
                     .label { page-break-after: always; }
+                    .barcode-container { border-top: 2px solid #000; }
+                    .barcode-image { max-width: 300px; height: auto; }
+                    .barcode-text { font-family: monospace; font-size: 14px; font-weight: bold; }
                   }
                   ${getStylesForPrintSize(printSize)}
                 </style>
@@ -429,6 +445,7 @@ export function LabelPreview({
       </div>
 
       <Card>
+<<<<<<< HEAD
         <div
           id="label-preview"
           className="bg-white border-2 border-gray-300 p-4 print:border-0 print:p-0"
@@ -446,6 +463,29 @@ export function LabelPreview({
             />
           )}
         </div>
+=======
+        <CardContent className="p-6">
+          <div
+            id="label-preview"
+            className="bg-white border-2 border-gray-300 p-4 print:border-0 print:p-0"
+          >
+            {template.id === "template1" && (
+              <Template1Preview
+                productData={productData}
+                generatedCode={generatedCode}
+                barcodeDataURL={barcodeDataURL}
+              />
+            )}
+            {template.id === "template2" && (
+              <Template2Preview
+                productData={productData}
+                generatedCode={generatedCode}
+                barcodeDataURL={barcodeDataURL}
+              />
+            )}
+          </div>
+        </CardContent>
+>>>>>>> refs/remotes/origin/main
       </Card>
 
       <Card>
@@ -480,9 +520,11 @@ export function LabelPreview({
 function Template1Preview({
   productData,
   generatedCode,
+  barcodeDataURL,
 }: {
   productData: ProductData;
   generatedCode: string;
+  barcodeDataURL: string;
 }) {
   const formatDate = (dateString: string) => {
     if (!dateString) return "";
@@ -575,10 +617,18 @@ function Template1Preview({
         </div>
 
         {generatedCode && (
-          <div className="text-center pt-4 border-t-2 border-gray-300">
-            <div className="font-bold">
+          <div className="barcode-container text-center pt-4 border-t-2 border-gray-300">
+            <div className="barcode-text font-bold mb-2">
               Code de Traçabilité: {generatedCode}
             </div>
+            {barcodeDataURL && (
+              <img 
+                src={barcodeDataURL} 
+                alt={`Barcode: ${generatedCode}`}
+                className="barcode-image mx-auto"
+                style={{ maxWidth: '300px', height: 'auto' }}
+              />
+            )}
           </div>
         )}
       </div>
@@ -589,9 +639,11 @@ function Template1Preview({
 function Template2Preview({
   productData,
   generatedCode,
+  barcodeDataURL,
 }: {
   productData: ProductData;
   generatedCode: string;
+  barcodeDataURL: string;
 }) {
   return (
     <div className="w-full max-w-2xl mx-auto bg-white text-black font-sans text-sm">
@@ -738,8 +790,18 @@ function Template2Preview({
       </div>
 
       {generatedCode && (
-        <div className="text-center pt-4 border-t-2 border-gray-300">
-          <div className="font-bold">Code de Traçabilité: {generatedCode}</div>
+        <div className="barcode-container text-center pt-4 border-t-2 border-gray-300">
+          <div className="barcode-text font-bold mb-2">
+            Code de Traçabilité: {generatedCode}
+          </div>
+          {barcodeDataURL && (
+            <img 
+              src={barcodeDataURL} 
+              alt={`Barcode: ${generatedCode}`}
+              className="barcode-image mx-auto"
+              style={{ maxWidth: '300px', height: 'auto' }}
+            />
+          )}
         </div>
       )}
     </div>
