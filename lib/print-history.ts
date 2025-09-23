@@ -10,6 +10,7 @@ export interface PrintHistoryEntry {
   barcodeGenerated: string;
   exportFormat?: string;
   printSize?: string;
+  productName: string;
 }
 
 // Simulate local storage for print history
@@ -17,10 +18,11 @@ export class PrintHistoryManager {
   private static STORAGE_KEY = "pharmakina_print_history";
 
   static addEntry(
-    entry: Omit<PrintHistoryEntry, "id" | "printedAt">
+    entry: Omit<PrintHistoryEntry, "id" | "printedAt" | "productName"> & { name: string }
   ): PrintHistoryEntry {
     const newEntry: PrintHistoryEntry = {
       ...entry,
+      productName: entry.name,
       id: Date.now().toString(),
       printedAt: new Date().toLocaleString("fr-FR"),
     };

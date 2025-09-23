@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -21,9 +21,11 @@ import {
 } from "@/components/ui/dialog";
 import { Download, Printer, Settings } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { pdf } from "@react-pdf/renderer";
 import { PrintHistoryManager } from "@/lib/print-history";
 import type { ProductData, LabelTemplate } from "./label-generator";
 import { generateBarcodeDataURL } from "@/lib/barcode-generator";
+import { LabelPDFDocument } from "./pdf-label-templates";
 
 interface LabelPreviewProps {
   template: LabelTemplate | null;
@@ -57,7 +59,7 @@ export function LabelPreview({
     }
   }, [generatedCode]);
 
-  const handlePrint = async () => {
+  const handlePrint = useCallback(async () => {
     if (!template || !productData.name) {
       toast({
         title: "Erreur",
@@ -71,64 +73,54 @@ export function LabelPreview({
     setIsPrinting(true);
 
     try {
-      const printWindow = window.open("", "_blank");
+      // Generate PDF using react-pdf
+      const pdfDoc = (
+        <LabelPDFDocument
+          template={template}
+          productData={productData}
+          generatedCode={generatedCode}
+          barcodeDataURL={barcodeDataURL}
+          copies={Number.parseInt(copies) || 1}
+        />
+      );
+
+      const pdfBlob = await pdf(pdfDoc).toBlob();
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+
+      // Open PDF in new window for printing
+      const printWindow = window.open(pdfUrl, '_blank');
       if (printWindow) {
-        const labelElement = document.getElementById("label-preview");
-        if (labelElement) {
-          const printContent = `
-            <!DOCTYPE html>
-            <html>
-              <head>
-                <title>Étiquette - ${productData.name}</title>
-                <style>
-                  body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
-                  .label { page-break-after: always; margin-bottom: 20px; }
-                  .barcode-container { text-align: center; margin-top: 10px; padding: 10px; border-top: 2px solid #ccc; }
-                  .barcode-image { max-width: 300px; height: auto; }
-                  .barcode-text { font-family: monospace; font-size: 14px; font-weight: bold; margin-top: 5px; }
-                  @media print {
-                    body { margin: 0; padding: 0; }
-                    .label { page-break-after: always; }
-                    .barcode-container { border-top: 2px solid #000; }
-                    .barcode-image { max-width: 300px; height: auto; }
-                    .barcode-text { font-family: monospace; font-size: 14px; font-weight: bold; }
-                  }
-                  ${getStylesForPrintSize(printSize)}
-                </style>
-              </head>
-              <body>
-                ${Array.from(
-                  { length: Number.parseInt(copies) || 1 },
-                  () => labelElement.outerHTML
-                ).join("")}
-              </body>
-            </html>
-          `;
-          printWindow.document.write(printContent);
-          printWindow.document.close();
+        printWindow.onload = () => {
           printWindow.print();
-
-          PrintHistoryManager.addEntry({
-            name: productData.name,
-            code: productData.code || "N/A",
-            template: template.name,
-            printedBy: "Admin", // TODO: Get from auth context
-            quantity: Number.parseInt(copies) || 1,
-            status: "completed",
-            barcodeGenerated: generatedCode,
-            printSize:
-              printSize === "custom"
-                ? `${customWidth}x${customHeight}px`
-                : printSize,
-          });
-
-          toast({
-            title: "Impression réussie",
-            description: `${copies} étiquette(s) envoyée(s) à l'imprimante`,
-          });
-        }
+        };
       }
+
+      PrintHistoryManager.addEntry({
+        name: productData.name,
+        code: productData.code || "N/A",
+        template: template.name,
+        printedBy: "Admin", // TODO: Get from auth context
+        quantity: Number.parseInt(copies) || 1,
+        status: "completed",
+        barcodeGenerated: generatedCode,
+        printSize:
+          printSize === "custom"
+            ? `${customWidth}x${customHeight}px`
+            : printSize,
+      });
+
+      toast({
+        title: "Impression réussie",
+        description: `${copies} étiquette(s) générée(s) en PDF`,
+      });
+
+      // Clean up URL after a delay
+      setTimeout(() => {
+        URL.revokeObjectURL(pdfUrl);
+      }, 10000);
+
     } catch (error) {
+      console.error('Print error:', error);
       PrintHistoryManager.addEntry({
         name: productData.name,
         code: productData.code || "N/A",
@@ -151,7 +143,7 @@ export function LabelPreview({
     } finally {
       setIsPrinting(false);
     }
-  };
+  }, [template, productData, generatedCode, barcodeDataURL, copies, printSize, customWidth, customHeight, toast]);
 
   const getStylesForPrintSize = (size: PrintSize) => {
     switch (size) {
@@ -168,7 +160,7 @@ export function LabelPreview({
     }
   };
 
-  const handleExport = async () => {
+  const handleExport = useCallback(async () => {
     if (!template || !productData.name) {
       toast({
         title: "Erreur",
@@ -181,18 +173,15 @@ export function LabelPreview({
 
     setIsExporting(true);
     try {
-      const labelElement = document.getElementById("label-preview");
-      if (!labelElement) return;
-
       switch (exportFormat) {
         case "png":
-          await exportAsPNG(labelElement);
+          await exportAsPNG();
           break;
         case "pdf":
-          await exportAsPDF(labelElement);
+          await exportAsPDF();
           break;
         case "svg":
-          await exportAsSVG(labelElement);
+          await exportAsSVG();
           break;
         case "json":
           await exportAsJSON();
@@ -234,9 +223,9 @@ export function LabelPreview({
     } finally {
       setIsExporting(false);
     }
-  };
+  }, [template, productData, generatedCode, barcodeDataURL, exportFormat, toast]);
 
-  const exportAsPNG = async (element: HTMLElement) => {
+  const exportAsPNG = async () => {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
     if (ctx) {
@@ -260,33 +249,29 @@ export function LabelPreview({
     }
   };
 
-  const exportAsPDF = async (element: HTMLElement) => {
-    const pdfContent = `
-      Étiquette Pharmaceutique
-      ========================
-      
-      Produit: ${productData.name}
-      Code: ${productData.code}
-      Date de fabrication: ${productData.manufacturingDate}
-      Date d'expiration: ${productData.expiryDate}
-      Poids net: ${productData.netWeight} Kg
-      Code de traçabilité: ${generatedCode}
-      
-      Fabricant: ${productData.manufacturer.name}
-      Adresse: ${productData.manufacturer.address}
-      Site web: ${productData.manufacturer.website}
-    `;
+  const exportAsPDF = async () => {
+    if (!template) return;
 
-    const blob = new Blob([pdfContent], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
+    const pdfDoc = (
+      <LabelPDFDocument
+        template={template}
+        productData={productData}
+        generatedCode={generatedCode}
+        barcodeDataURL={barcodeDataURL}
+        copies={1}
+      />
+    );
+
+    const pdfBlob = await pdf(pdfDoc).toBlob();
+    const url = URL.createObjectURL(pdfBlob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `etiquette-${productData.code || "produit"}.txt`;
+    link.download = `etiquette-${productData.code || "produit"}.pdf`;
     link.click();
     URL.revokeObjectURL(url);
   };
 
-  const exportAsSVG = async (element: HTMLElement) => {
+  const exportAsSVG = async () => {
     const svgContent = `
       <svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
         <rect width="800" height="600" fill="white" stroke="black" strokeWidth="2"/>
@@ -462,30 +447,6 @@ export function LabelPreview({
             />
           )}
         </div>
-
-        <CardContent className="p-6">
-          <div
-            id="label-preview"
-            className="bg-white border-2 border-gray-300 p-4 print:border-0 print:p-0"
-          >
-            {template.id === "template1" && (
-              <Template1Preview
-                productData={productData}
-                generatedCode={generatedCode}
-                barcodeDataURL={barcodeDataURL}
-              />
-            )}
-            {template.id === "template2" && (
-              <Template2Preview
-                productData={productData}
-                generatedCode={generatedCode}
-                barcodeDataURL={barcodeDataURL}
-              />
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
       <Card>
         <CardHeader>
           <CardTitle className="text-sm">Informations d'Exportation</CardTitle>
