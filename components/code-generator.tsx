@@ -15,6 +15,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Copy, RefreshCw, QrCode, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { generateProductInfoString } from "@/lib/barcode-generator";
 import type { ProductData } from "./label-generator";
 
 interface CodeGeneratorProps {
@@ -86,22 +87,41 @@ export function CodeGenerator({
       .substring(2, 6)
       .toUpperCase();
 
+    // Generate base tracking code
+    let trackingCode = '';
     switch (format) {
       case "standard":
-        return `${code}-${timestamp}`;
+        trackingCode = `${code}-${timestamp}`;
+        break;
       case "batch":
         const batchNumber = String(index || 1).padStart(3, "0");
-        return `${code}-${manufacturingDate}-${batchNumber}-${randomSuffix}`;
+        trackingCode = `${code}-${manufacturingDate}-${batchNumber}-${randomSuffix}`;
+        break;
       case "qr":
-        return `QR-${code}-${timestamp}-${randomSuffix}`;
+        trackingCode = `QR-${code}-${timestamp}-${randomSuffix}`;
+        break;
       case "barcode":
-        return `${code}${manufacturingDate.substring(2)}${randomSuffix}`;
+        trackingCode = `${code}${manufacturingDate.substring(2)}${randomSuffix}`;
+        break;
       case "custom":
         const prefix = customPrefix || "CUSTOM";
-        return `${prefix}-${code}-${timestamp}`;
+        trackingCode = `${prefix}-${code}-${timestamp}`;
+        break;
       default:
-        return `${code}-${timestamp}`;
+        trackingCode = `${code}-${timestamp}`;
     }
+
+    // For barcode format, encode full product information
+    if (format === "barcode") {
+      const productInfo = generateProductInfoString({
+        ...productData,
+        trackingCode: trackingCode,
+        generatedAt: new Date().toISOString()
+      });
+      return productInfo;
+    }
+
+    return trackingCode;
   };
 
   const handleGenerateCode = () => {

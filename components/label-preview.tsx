@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Printer, Download, FileText, Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { generateBarcodeDataURL } from "@/lib/barcode-generator";
+import { generateBarcodeDataURL, generateProductInfoString } from "@/lib/barcode-generator";
 import { PrintHistoryManager } from "@/lib/print-history";
 import { pdf } from "@react-pdf/renderer";
 import { LabelPDFDocument } from "./pdf-label-templates";
@@ -33,7 +33,24 @@ export function LabelPreview({
   // Generate barcode when code changes
   useEffect(() => {
     if (generatedCode) {
-      const dataURL = generateBarcodeDataURL(generatedCode);
+      // For display purposes, show the tracking code
+      // But for barcode generation, use full product info
+      let barcodeData = generatedCode;
+      
+      // If it's already JSON (from barcode format), use as is
+      try {
+        JSON.parse(generatedCode);
+        barcodeData = generatedCode;
+      } catch {
+        // If not JSON, create product info string for barcode
+        barcodeData = generateProductInfoString({
+          ...productData,
+          trackingCode: generatedCode,
+          generatedAt: new Date().toISOString()
+        });
+      }
+      
+      const dataURL = generateBarcodeDataURL(barcodeData);
       setBarcodeDataURL(dataURL);
     }
   }, [generatedCode]);
@@ -317,16 +334,26 @@ export function LabelPreview({
               {generatedCode && (
                 <div className="barcode-container border-t-2 border-gray-300 pt-4 mt-4 text-center">
                   <div className="font-mono font-bold text-sm mb-2">
-                    Code de Traçabilité: {generatedCode}
+                    Code de Traçabilité: {(() => {
+                      try {
+                        const parsed = JSON.parse(generatedCode);
+                        return parsed.trackingCode || parsed.code || generatedCode;
+                      } catch {
+                        return generatedCode;
+                      }
+                    })()}
                   </div>
                   {barcodeDataURL && (
                     <img 
-                      src={barcodeDataURL} 
-                      alt={`Barcode ${generatedCode}`}
+                      src={barcodeDataURL}
+                      alt="Product Information Barcode"
                       className="barcode-image mx-auto max-w-full h-auto"
                       style={{ maxWidth: '300px', height: '80px' }}
                     />
                   )}
+                  <div className="text-xs text-muted-foreground mt-2">
+                    Barcode contains: Product name, code, dates, weight, manufacturer
+                  </div>
                 </div>
               )}
             </div>
@@ -440,16 +467,26 @@ export function LabelPreview({
             {generatedCode && (
               <div className="barcode-container border-t-2 border-gray-300 pt-4 mt-4 text-center">
                 <div className="font-mono font-bold text-sm mb-2">
-                  Code de Traçabilité: {generatedCode}
+                  Code de Traçabilité: {(() => {
+                    try {
+                      const parsed = JSON.parse(generatedCode);
+                      return parsed.trackingCode || parsed.code || generatedCode;
+                    } catch {
+                      return generatedCode;
+                    }
+                  })()}
                 </div>
                 {barcodeDataURL && (
                   <img 
-                    src={barcodeDataURL} 
-                    alt={`Barcode ${generatedCode}`}
+                    src={barcodeDataURL}
+                    alt="Product Information Barcode"
                     className="barcode-image mx-auto max-w-full h-auto"
                     style={{ maxWidth: '300px', height: '80px' }}
                   />
                 )}
+                <div className="text-xs text-muted-foreground mt-2">
+                  Barcode contains: Product name, code, dates, weight, manufacturer
+                </div>
               </div>
             )}
           </div>

@@ -378,7 +378,14 @@ const Template1Label: React.FC<{
       {generatedCode && (
         <View style={styles.barcodeContainer}>
           <Text style={styles.barcodeLabel}>
-            Code de Traçabilité: {generatedCode}
+            Code de Traçabilité: {(() => {
+              try {
+                const parsed = JSON.parse(generatedCode);
+                return parsed.trackingCode || parsed.code || generatedCode;
+              } catch {
+                return generatedCode;
+              }
+            })()}
           </Text>
           {barcodeDataURL && (
             <Image src={barcodeDataURL} style={styles.barcodeImage} />
@@ -520,7 +527,14 @@ const Template2Label: React.FC<{
     {generatedCode && (
       <View style={styles.barcodeContainer}>
         <Text style={styles.barcodeLabel}>
-          Code de Traçabilité: {generatedCode}
+          Code de Traçabilité: {(() => {
+            try {
+              const parsed = JSON.parse(generatedCode);
+              return parsed.trackingCode || parsed.code || generatedCode;
+            } catch {
+              return generatedCode;
+            }
+          })()}
         </Text>
         {barcodeDataURL && (
           <Image src={barcodeDataURL} style={styles.barcodeImage} />

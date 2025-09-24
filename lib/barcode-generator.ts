@@ -66,3 +66,30 @@ export const downloadBarcode = (text: string, filename?: string) => {
   link.href = dataURL;
   link.click();
 };
+
+// Generate product information string for barcode encoding
+export const generateProductInfoString = (productData: any): string => {
+  const info = {
+    name: productData.name || '',
+    code: productData.code || '',
+    mfgDate: productData.manufacturingDate || '',
+    expDate: productData.expiryDate || '',
+    netWeight: productData.netWeight || '',
+    manufacturer: productData.manufacturer?.name || '',
+    storageConditions: productData.storageConditions || '',
+    batchCode: productData.exportLot || ''
+  };
+
+  // Create a structured string that can be parsed when scanned
+  return JSON.stringify(info);
+};
+
+// Parse product information from scanned barcode
+export const parseProductInfoFromBarcode = (scannedData: string): any => {
+  try {
+    return JSON.parse(scannedData);
+  } catch (error) {
+    // If not JSON, return as simple string
+    return { rawData: scannedData };
+  }
+};
