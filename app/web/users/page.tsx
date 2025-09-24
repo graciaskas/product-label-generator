@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -39,37 +39,12 @@ import {
   UserX,
 } from "lucide-react";
 import { UserForm } from "@/components/user-form";
+import { AppContext } from "@/contexts/AppContextProvider";
 
 // Mock data for users
 const mockUsers = [
   {
     id: 1,
-    firstName: "Jean",
-    lastName: "Dupont",
-    email: "jean.dupont@pharmakina.com",
-    phone: "+243 999 455 001",
-    role: "admin",
-    department: "Administration",
-    status: "active",
-    lastLogin: "2025-01-15 14:30",
-    createdAt: "2024-12-01",
-    avatar: "/placeholder-user.jpg",
-  },
-  {
-    id: 2,
-    firstName: "Marie",
-    lastName: "Martin",
-    email: "marie.martin@pharmakina.com",
-    phone: "+243 999 455 002",
-    role: "manager",
-    department: "Production",
-    status: "active",
-    lastLogin: "2025-01-15 09:15",
-    createdAt: "2024-12-05",
-    avatar: "/placeholder-user.jpg",
-  },
-  {
-    id: 3,
     firstName: "Pierre",
     lastName: "Durand",
     email: "pierre.durand@pharmakina.com",
@@ -79,19 +54,6 @@ const mockUsers = [
     status: "active",
     lastLogin: "2025-01-14 16:45",
     createdAt: "2024-12-10",
-    avatar: "/placeholder-user.jpg",
-  },
-  {
-    id: 4,
-    firstName: "Sophie",
-    lastName: "Bernard",
-    email: "sophie.bernard@pharmakina.com",
-    phone: "+243 999 455 004",
-    role: "operator",
-    department: "Logistique",
-    status: "inactive",
-    lastLogin: "2025-01-10 11:20",
-    createdAt: "2024-12-15",
     avatar: "/placeholder-user.jpg",
   },
 ];
@@ -111,11 +73,15 @@ const roleColors = {
 } as const;
 
 export default function UsersPage() {
-  const [users, setUsers] = useState(mockUsers);
+  const { users, getUsers } = useContext(AppContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+
+  useEffect(() => {
+    getUsers();
+  }, []);
 
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
@@ -267,6 +233,7 @@ export default function UsersPage() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <Badge
+                    className="text-white"
                     variant={roleColors[user.role as keyof typeof roleColors]}
                   >
                     <Shield className="mr-1 h-3 w-3" />
@@ -275,7 +242,8 @@ export default function UsersPage() {
                   <Badge
                     variant={user.status === "active" ? "default" : "secondary"}
                   >
-                    {user.status === "active" ? "Actif" : "Inactif"}
+                    {/* {user.status === "active" ? "Actif" : "Inactif"} */}
+                    Actif
                   </Badge>
                 </div>
 

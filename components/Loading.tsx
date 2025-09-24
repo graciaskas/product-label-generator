@@ -6,7 +6,7 @@ export default function Loading() {
       <aside className="w-64 bg-white p-6 shadow-xl hidden md:block rounded-r-3xl">
         <div className="h-full flex flex-col space-y-8">
           <div className="flex items-center space-x-2 animate-pulse">
-            <div className="w-8 h-8 rounded-lg bg-indigo-300"></div>
+            <div className="w-8 h-8 rounded-lg bg-green-300"></div>
             <div className="h-6 bg-gray-300 w-32 rounded-full"></div>
           </div>
 
@@ -35,7 +35,7 @@ export default function Loading() {
         </div>
       </aside>
 
-      <main className="flex-1 p-6 md:p-10 flex flex-col space-y-8">
+      <main className="flex-1 p-6 md:p-10 flex flex-col">
         <header className="h-16 w-full bg-white shadow-md rounded-2xl animate-pulse">
           <div className="flex items-center h-full p-4 space-x-4">
             <div className="h-8 bg-gray-200 w-48 rounded-full"></div>
