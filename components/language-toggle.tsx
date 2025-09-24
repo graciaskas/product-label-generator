@@ -13,10 +13,24 @@ import {
 
 export function LanguageToggle() {
   const { i18n, t } = useTranslation()
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng)
     localStorage.setItem('preferred-language', lng)
+  }
+
+  if (!mounted) {
+    return (
+      <Button variant="outline" size="icon">
+        <Languages className="h-[1.2rem] w-[1.2rem]" />
+        <span className="sr-only">Language</span>
+      </Button>
+    )
   }
 
   return (

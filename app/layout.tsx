@@ -21,7 +21,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
-        <main className="">{children}</main>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          disableTransitionOnChange={false}
+        >
+          <main className="">{children}</main>
+          <Analytics />
+        </ThemeProvider>
       </body>
     </html>
   );

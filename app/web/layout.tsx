@@ -9,7 +9,6 @@ import { Package, User2Icon } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageToggle } from "@/components/language-toggle";
 import Loading from "@/components/Loading";
-import { ThemeProvider } from "@/components/theme-provider";
 
 export default function WebLayout({
   children,
@@ -19,12 +18,6 @@ export default function WebLayout({
   return (
     <AuthProvider>
       <AppContextProvider>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem
-          disableTransitionOnChange
-        >
           <SidebarProvider>
             <Suspense fallback={<Loading />}>
               <div className="flex min-h-screen w-full">
@@ -56,8 +49,6 @@ export default function WebLayout({
               </div>
             </Suspense>
           </SidebarProvider>
-          <Analytics />
-        </ThemeProvider>
       </AppContextProvider>
     </AuthProvider>
   );

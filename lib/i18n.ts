@@ -218,15 +218,21 @@ const resources = {
   }
 };
 
-i18n
-  .use(initReactI18next)
-  .init({
-    resources,
-    lng: 'fr', // default language
-    fallbackLng: 'en',
-    interpolation: {
-      escapeValue: false,
-    },
-  });
+// Initialize i18n only if not already initialized
+if (!i18n.isInitialized) {
+  i18n
+    .use(initReactI18next)
+    .init({
+      resources,
+      lng: 'fr', // default language
+      fallbackLng: 'en',
+      interpolation: {
+        escapeValue: false,
+      },
+      react: {
+        useSuspense: false,
+      },
+    });
+}
 
 export default i18n;

@@ -10,9 +10,25 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useTranslation } from "react-i18next"
 
 export function ThemeToggle() {
-  const { setTheme } = useTheme()
+  const { setTheme, theme } = useTheme()
+  const { t } = useTranslation()
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return (
+      <Button variant="outline" size="icon">
+        <Sun className="h-[1.2rem] w-[1.2rem]" />
+        <span className="sr-only">Toggle theme</span>
+      </Button>
+    )
+  }
 
   return (
     <DropdownMenu>
@@ -25,10 +41,10 @@ export function ThemeToggle() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => setTheme("light")}>
-          Light
+          {t('lightMode')}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme("dark")}>
-          Dark
+          {t('darkMode')}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme("system")}>
           System
