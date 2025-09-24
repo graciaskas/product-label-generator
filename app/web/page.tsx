@@ -18,17 +18,17 @@ export default function Home() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-primary">{t('dashboardTitle')}</h1>
-        <p className="text-muted-foreground">
-          {t('dashboardSubtitle')}
-        </p>
+        <h1 className="text-3xl font-bold text-primary">
+          {t("dashboardTitle")}
+        </h1>
+        <p className="text-muted-foreground">{t("dashboardSubtitle")}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              {t('registeredProducts')}
+              {t("registeredProducts")}
             </CardTitle>
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
@@ -41,7 +41,7 @@ export default function Home() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              {t('generatedLabels')}
+              {t("generatedLabels")}
             </CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
@@ -53,7 +53,7 @@ export default function Home() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('prints')}</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("prints")}</CardTitle>
             <History className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -64,7 +64,9 @@ export default function Home() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('generatedCodes')}</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t("generatedCodes")}
+            </CardTitle>
             <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -77,16 +79,14 @@ export default function Home() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>{t('quickActions')}</CardTitle>
-            <CardDescription>
-              {t('quickActionsDesc')}
-            </CardDescription>
+            <CardTitle>{t("quickActions")}</CardTitle>
+            <CardDescription>{t("quickActionsDesc")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             <Button asChild className="w-full justify-start">
-              <Link href="/generate">
+              <Link href="/web/generate">
                 <FileText className="mr-2 h-4 w-4" />
-                {t('generateLabel')}
+                {t("generateLabel")}
               </Link>
             </Button>
             <Button
@@ -96,7 +96,7 @@ export default function Home() {
             >
               <Link href="/web/products">
                 <Package className="mr-2 h-4 w-4" />
-                {t('manageProducts')}
+                {t("manageProducts")}
               </Link>
             </Button>
             <Button
@@ -106,7 +106,7 @@ export default function Home() {
             >
               <Link href="/web/history">
                 <History className="mr-2 h-4 w-4" />
-                {t('viewHistory')}
+                {t("viewHistory")}
               </Link>
             </Button>
           </CardContent>
@@ -114,8 +114,8 @@ export default function Home() {
 
         <Card>
           <CardHeader>
-            <CardTitle>{t('recentActivity')}</CardTitle>
-            <CardDescription>{t('recentActivityDesc')}</CardDescription>
+            <CardTitle>{t("recentActivity")}</CardTitle>
+            <CardDescription>{t("recentActivityDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -123,10 +123,10 @@ export default function Home() {
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                 <div className="flex-1">
                   <p className="text-sm">
-                    {t('labelGenerated')} QUININE HYDROCHLORIDE
+                    {t("labelGenerated")} QUININE HYDROCHLORIDE
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {t('hoursAgo', { count: 2 })}
+                    {t("hoursAgo", { count: 2 })}
                   </p>
                 </div>
               </div>
@@ -135,7 +135,7 @@ export default function Home() {
                 <div className="flex-1">
                   <p className="text-sm">Nouveau produit ajouté</p>
                   <p className="text-xs text-muted-foreground">
-                    {t('hoursAgo', { count: 4 })}
+                    {t("hoursAgo", { count: 4 })}
                   </p>
                 </div>
               </div>

@@ -2,8 +2,8 @@ import React from "react";
 
 export default function Loading() {
   return (
-    <body className="flex min-h-screen">
-      <aside className="w-64 bg-white p-6 shadow-xl hidden md:block rounded-r-3xl">
+    <div className="flex min-h-screen">
+      <div className="w-64 bg-white p-6 shadow-xl hidden md:block rounded-r-3xl">
         <div className="h-full flex flex-col space-y-8">
           <div className="flex items-center space-x-2 animate-pulse">
             <div className="w-8 h-8 rounded-lg bg-green-300"></div>
@@ -33,17 +33,17 @@ export default function Loading() {
             <div className="h-8 bg-gray-200 w-full rounded-lg"></div>
           </div>
         </div>
-      </aside>
+      </div>
 
-      <main className="flex-1 p-6 md:p-10 flex flex-col">
-        <header className="h-16 w-full bg-white shadow-md rounded-2xl animate-pulse">
+      <div className="flex-1 p-6 md:p-10 flex flex-col">
+        <div className="h-16 w-full bg-white shadow-md rounded-2xl animate-pulse">
           <div className="flex items-center h-full p-4 space-x-4">
             <div className="h-8 bg-gray-200 w-48 rounded-full"></div>
             <div className="flex-1"></div>
             <div className="h-10 w-10 bg-gray-200 rounded-full"></div>
             <div className="h-8 w-8 bg-gray-200 rounded-full"></div>
           </div>
-        </header>
+        </div>
 
         <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0 animate-pulse">
           <div className="h-8 w-64 bg-gray-300 rounded-full"></div>
@@ -85,7 +85,7 @@ export default function Loading() {
             <div className="h-10 bg-gray-200 rounded-lg"></div>
           </div>
         </div>
-      </main>
-    </body>
+      </div>
+    </div>
   );
 }

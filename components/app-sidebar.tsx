@@ -23,6 +23,8 @@ import {
   SidebarMenuItem,
   SidebarHeader,
 } from "@/components/ui/sidebar";
+import { Button } from "./ui/button";
+import { signOut } from "next-auth/react";
 
 const menuItems = [
   {
@@ -63,7 +65,7 @@ export function AppSidebar() {
   const { t } = useTranslation();
 
   return (
-    <Sidebar>
+    <Sidebar className="relative">
       <SidebarHeader className="border-b px-6 py-4">
         <div className="flex items-center gap-2">
           <div
@@ -81,7 +83,7 @@ export function AppSidebar() {
         </div>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
+        <SidebarGroup style={{ height: "80vh" }}>
           <SidebarGroupLabel>{t("navigation")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -108,6 +110,14 @@ export function AppSidebar() {
               })}
             </SidebarMenu>
           </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarGroup>
+          <Button
+            onClick={() => signOut()}
+            className="btn btn-primary bottom-0"
+          >
+            Se deconnecter
+          </Button>
         </SidebarGroup>
       </SidebarContent>
     </Sidebar>
