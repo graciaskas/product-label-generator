@@ -5,14 +5,14 @@ export const generateEAN128Barcode = (productData: any): string => {
   const AI_LOT = '10';            // Batch/Lot Number
   const AI_EXPIRY = '17';         // Expiry Date (YYMMDD)
   const AI_COUNTRY = '421';       // Country of Origin
-  const AI_MANUFACTURER = '414'; // GLN of Manufacturer
+  const AI_MANUFACTURER = '414';  // GLN of Manufacturer
 
   // Extract data
   const productCode = productData.code || '';
   const expiryDate = formatExpiryDateForGS1(productData.expiryDate);
   const countryCode = '243'; // Democratic Republic of Congo
   const manufacturerCode = '1240'; // PHARMAKINA manufacturer code
-  const lotNumber = productData.exportLot || productCode;
+  const lotNumber = productData.code || productCode; // Use product code as lot number
 
   // Build GS1-128 data string
   // Format: (AI)Data(AI)Data...
