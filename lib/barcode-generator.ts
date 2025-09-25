@@ -1,5 +1,9 @@
+// Import JsBarcode library
+import JsBarcode from "jsbarcode";
+
+// The core function to generate the barcode as a data URL
 export const generateBarcodeDataURL = (text: string): string => {
-  // Create a canvas element
+  // Create a canvas element to render the barcode
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
 
@@ -13,57 +17,23 @@ export const generateBarcodeDataURL = (text: string): string => {
   ctx.fillStyle = "white";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Simple Code 128 style barcode generation
-  const barWidth = 2;
-  const barHeight = 50;
-  const startX = 20;
-  const startY = 10;
+  // Use JsBarcode to draw the barcode directly onto the canvas.
+  // We use the "CODE128" format, which is the technical standard
+  // for EAN-128. The 'ean128' option ensures GS1 compliance.
+  JsBarcode(canvas, text, {
+    format: "CODE128",
+    displayValue: true, // Display the human-readable text below the bars
+    ean128: true, // Crucial for proper GS1-128 formatting
+    width: 3, // Adjusts the width of the bars
+    height: 50, // Adjusts the height of the bars
+    margin: 12,
+  });
 
-  // Convert text to binary pattern (simplified Code 128 simulation)
-  let binaryPattern = "";
-  for (let i = 0; i < text.length; i++) {
-    const charCode = text.charCodeAt(i);
-    // Create alternating pattern based on character codes
-    if (charCode % 4 === 0) {
-      binaryPattern += "11001100";
-    } else if (charCode % 4 === 1) {
-      binaryPattern += "10011001";
-    } else if (charCode % 4 === 2) {
-      binaryPattern += "11010010";
-    } else {
-      binaryPattern += "10100110";
-    }
-  }
-
-  // Add start and end patterns
-  binaryPattern = "11010010000" + binaryPattern + "11010011000";
-
-  // Draw bars
-  ctx.fillStyle = "black";
-  const maxBars = Math.min(binaryPattern.length, 120); // Limit to fit canvas
-  const actualBarWidth = Math.min(barWidth, (canvas.width - 40) / maxBars);
-
-  for (let i = 0; i < maxBars; i++) {
-    if (binaryPattern[i] === "1") {
-      ctx.fillRect(
-        startX + i * actualBarWidth,
-        startY,
-        actualBarWidth,
-        barHeight
-      );
-    }
-  }
-
-  // Add text below barcode
-  ctx.fillStyle = "black";
-  ctx.font = "12px monospace";
-  ctx.textAlign = "center";
-  ctx.fillText(text, canvas.width / 2, startY + barHeight + 20);
-
-  // Return data URL
+  // Return the barcode image as a data URL
   return canvas.toDataURL("image/png");
 };
 
+// The function to download the generated barcode image
 export const downloadBarcode = (text: string, filename?: string) => {
   const dataURL = generateBarcodeDataURL(text);
   const link = document.createElement("a");
@@ -72,29 +42,40 @@ export const downloadBarcode = (text: string, filename?: string) => {
   link.click();
 };
 
-// Generate product information string for barcode encoding
+// This function now generates a properly formatted GS1-128 data string.
+// It combines the Application Identifiers (AIs) with the product data.
+// Note: Variable-length fields like batch code are terminated by the
+// FNC1 character, which JsBarcode automatically handles with the GS1 standard.
 export const generateProductInfoString = (productData: any): string => {
-  const info = {
-    name: productData.name || "",
-    code: productData.code || "",
-    mfgDate: productData.manufacturingDate || "",
-    expDate: productData.expiryDate || "",
-    netWeight: productData.netWeight || "",
-    manufacturer: productData.manufacturer?.name || "",
-    storageConditions: productData.storageConditions || "",
-    batchCode: productData.exportLot || "",
-  };
+  const gtin = productData.code || "";
+  const expDate = productData.expiryDate || ""; // Format: YYMMDD
+  const batchCode = productData.exportLot || "";
 
-  // Create a structured string that can be parsed when scanned
-  return JSON.stringify(info);
+  // The format is (AI)Data(AI)Data...
+  // Example: (01)GTIN(17)ExpiryDate(10)BatchCode
+  return `(01)${gtin}(17)${expDate}(10)${batchCode}`;
 };
 
-// Parse product information from scanned barcode
+// This function now correctly parses the GS1 string back into a JavaScript object.
 export const parseProductInfoFromBarcode = (scannedData: string): any => {
   try {
-    return JSON.parse(scannedData);
+    const data = {};
+    // Regex to find all Application Identifiers and their data
+    const aiRegex = /\((\d{2,4})\)(.*?)(?=\(\d{2,4}\)|\s*$)/g;
+    let match;
+
+    while ((match = aiRegex.exec(scannedData)) !== null) {
+      const ai = match[1];
+      const value = match[2];
+
+      // Map the AIs to meaningful property names
+      if (ai === "01") data.code = value;
+      if (ai === "17") data.expiryDate = value;
+      if (ai === "10") data.exportLot = value;
+      // Add more AIs as needed...
+    }
+    return data;
   } catch (error) {
-    // If not JSON, return as simple string
     return { rawData: scannedData };
   }
 };

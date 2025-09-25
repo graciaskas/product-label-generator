@@ -253,8 +253,8 @@ const styles = StyleSheet.create({
     fontFamily: "Courier",
   },
   barcodeImage: {
-    width: 150,
-    height: 40,
+    width: 3000,
+    height: 80,
   },
 });
 
@@ -378,7 +378,8 @@ const Template1Label: React.FC<{
       {generatedCode && (
         <View style={styles.barcodeContainer}>
           <Text style={styles.barcodeLabel}>
-            Code de Traçabilité: {(() => {
+            Code de Traçabilité:{" "}
+            {(() => {
               try {
                 const parsed = JSON.parse(generatedCode);
                 return parsed.trackingCode || parsed.code || generatedCode;
@@ -527,7 +528,8 @@ const Template2Label: React.FC<{
     {generatedCode && (
       <View style={styles.barcodeContainer}>
         <Text style={styles.barcodeLabel}>
-          Code de Traçabilité: {(() => {
+          Code de Traçabilité:{" "}
+          {(() => {
             try {
               const parsed = JSON.parse(generatedCode);
               return parsed.trackingCode || parsed.code || generatedCode;

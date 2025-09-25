@@ -8,7 +8,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Printer, Download, FileText, Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { generateBarcodeDataURL, generateProductInfoString } from "@/lib/barcode-generator";
+import {
+  generateBarcodeDataURL,
+  generateProductInfoString,
+} from "@/lib/barcode-generator";
 import { PrintHistoryManager } from "@/lib/print-history";
 import { pdf } from "@react-pdf/renderer";
 import { LabelPDFDocument } from "./pdf-label-templates";
@@ -36,7 +39,7 @@ export function LabelPreview({
       // For display purposes, show the tracking code
       // But for barcode generation, use full product info
       let barcodeData = generatedCode;
-      
+
       // If it's already JSON (from barcode format), use as is
       try {
         JSON.parse(generatedCode);
@@ -46,10 +49,10 @@ export function LabelPreview({
         barcodeData = generateProductInfoString({
           ...productData,
           trackingCode: generatedCode,
-          generatedAt: new Date().toISOString()
+          generatedAt: new Date().toISOString(),
         });
       }
-      
+
       const dataURL = generateBarcodeDataURL(barcodeData);
       setBarcodeDataURL(dataURL);
     }
@@ -65,7 +68,8 @@ export function LabelPreview({
     if (!template || !productData.name) {
       toast({
         title: "Erreur",
-        description: "Veuillez sélectionner un modèle et remplir les informations du produit.",
+        description:
+          "Veuillez sélectionner un modèle et remplir les informations du produit.",
         variant: "destructive",
       });
       return;
@@ -74,7 +78,7 @@ export function LabelPreview({
     setIsGenerating(true);
     try {
       const numCopies = Number.parseInt(copies) || 1;
-      
+
       // Generate PDF
       const pdfDoc = (
         <LabelPDFDocument
@@ -90,7 +94,7 @@ export function LabelPreview({
       const pdfUrl = URL.createObjectURL(pdfBlob);
 
       // Open PDF in new window for printing
-      const printWindow = window.open(pdfUrl, '_blank');
+      const printWindow = window.open(pdfUrl, "_blank");
       if (printWindow) {
         printWindow.onload = () => {
           printWindow.print();
@@ -132,7 +136,8 @@ export function LabelPreview({
     if (!template || !productData.name) {
       toast({
         title: "Erreur",
-        description: "Veuillez sélectionner un modèle et remplir les informations du produit.",
+        description:
+          "Veuillez sélectionner un modèle et remplir les informations du produit.",
         variant: "destructive",
       });
       return;
@@ -141,7 +146,7 @@ export function LabelPreview({
     setIsGenerating(true);
     try {
       const numCopies = Number.parseInt(copies) || 1;
-      
+
       // Generate PDF
       const pdfDoc = (
         <LabelPDFDocument
@@ -159,7 +164,9 @@ export function LabelPreview({
       // Download PDF
       const link = document.createElement("a");
       link.href = pdfUrl;
-      link.download = `etiquettes-${productData.code || "produit"}-${Date.now()}.pdf`;
+      link.download = `etiquettes-${
+        productData.code || "produit"
+      }-${Date.now()}.pdf`;
       link.click();
 
       // Add to print history
@@ -251,7 +258,9 @@ export function LabelPreview({
       <div className="border rounded-lg p-4 bg-white">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold">Aperçu - {template.name}</h3>
-          <Badge variant="secondary">{template.type === "detailed" ? "Détaillé" : "Basique"}</Badge>
+          <Badge variant="secondary">
+            {template.type === "detailed" ? "Détaillé" : "Basique"}
+          </Badge>
         </div>
 
         {/* Template 1 Preview */}
@@ -260,13 +269,23 @@ export function LabelPreview({
             {/* Header */}
             <div className="bg-green-600 text-white p-3 flex justify-between items-start">
               <div className="flex-1">
-                <div className="font-bold text-sm">{productData.manufacturer?.name || "PHARMAKINA S.A."}</div>
-                <div className="text-xs">{productData.manufacturer?.address || "Km4, Route de Goma, P.O. Box 1240 BUKAVU"}</div>
-                <div className="text-xs">{productData.manufacturer?.country || "Democratic Republic of Congo"}</div>
+                <div className="font-bold text-sm">
+                  {productData.manufacturer?.name || "PHARMAKINA S.A."}
+                </div>
+                <div className="text-xs">
+                  {productData.manufacturer?.address ||
+                    "Km4, Route de Goma, P.O. Box 1240 BUKAVU"}
+                </div>
+                <div className="text-xs">
+                  {productData.manufacturer?.country ||
+                    "Democratic Republic of Congo"}
+                </div>
               </div>
               <div className="w-12 h-12 border-2 border-white rounded-full flex items-center justify-center">
                 <div className="text-xs text-center leading-tight">
-                  BUKAVU<br />PHARMAKINA
+                  BUKAVU
+                  <br />
+                  PHARMAKINA
                 </div>
               </div>
             </div>
@@ -286,7 +305,9 @@ export function LabelPreview({
               </div>
               <div className="flex justify-between ml-4">
                 <span>- Manufacturing date</span>
-                <span>: {formatDate(productData.manufacturingDate) || "07/2025"}</span>
+                <span>
+                  : {formatDate(productData.manufacturingDate) || "07/2025"}
+                </span>
               </div>
               <div className="flex justify-between ml-4">
                 <span>- Expiry date</span>
@@ -306,23 +327,31 @@ export function LabelPreview({
               </div>
 
               <div className="text-center text-red-600 font-bold py-2">
-                Storage conditions : {productData.storageConditions || "Protect from light and humidity."}
+                Storage conditions :{" "}
+                {productData.storageConditions ||
+                  "Protect from light and humidity."}
               </div>
 
               <div className="space-y-1">
                 <div className="flex">
                   <span className="font-bold">Manufacturer: </span>
-                  <span className="text-green-600 font-bold">{productData.manufacturer?.name || "PHARMAKINA S.A."}</span>
+                  <span className="text-green-600 font-bold">
+                    {productData.manufacturer?.name || "PHARMAKINA S.A."}
+                  </span>
                 </div>
                 <div className="ml-16 text-xs">
-                  {productData.manufacturer?.address || "Km4, Route de Goma, P.O. Box 1240 BUKAVU"}
+                  {productData.manufacturer?.address ||
+                    "Km4, Route de Goma, P.O. Box 1240 BUKAVU"}
                 </div>
                 <div className="ml-16 text-xs">
-                  {productData.manufacturer?.country || "Democratic Republic of Congo"}
+                  {productData.manufacturer?.country ||
+                    "Democratic Republic of Congo"}
                 </div>
                 <div className="flex">
                   <span className="font-bold">Web site: </span>
-                  <span>{productData.manufacturer?.website || "www.pharmakina.com"}</span>
+                  <span>
+                    {productData.manufacturer?.website || "www.pharmakina.com"}
+                  </span>
                 </div>
               </div>
 
@@ -334,25 +363,29 @@ export function LabelPreview({
               {generatedCode && (
                 <div className="barcode-container border-t-2 border-gray-300 pt-4 mt-4 text-center">
                   <div className="font-mono font-bold text-sm mb-2">
-                    Code de Traçabilité: {(() => {
+                    Code de Traçabilité:{" "}
+                    {(() => {
                       try {
                         const parsed = JSON.parse(generatedCode);
-                        return parsed.trackingCode || parsed.code || generatedCode;
+                        return (
+                          parsed.trackingCode || parsed.code || generatedCode
+                        );
                       } catch {
                         return generatedCode;
                       }
                     })()}
                   </div>
                   {barcodeDataURL && (
-                    <img 
+                    <img
                       src={barcodeDataURL}
                       alt="Product Information Barcode"
                       className="barcode-image mx-auto max-w-full h-auto"
-                      style={{ maxWidth: '300px', height: '80px' }}
+                      style={{ maxWidth: "350px", height: "80px" }}
                     />
                   )}
                   <div className="text-xs text-muted-foreground mt-2">
-                    Barcode contains: Product name, code, dates, weight, manufacturer
+                    Barcode contains: Product name, code, dates, weight,
+                    manufacturer
                   </div>
                 </div>
               )}
@@ -379,16 +412,24 @@ export function LabelPreview({
 
             {/* Info Section */}
             <div className="bg-gray-100 p-3 mb-2 text-xs">
-              <div className="font-bold">REFERENCE PHARMACOPOEAIS: BP / USP / EP / IP</div>
+              <div className="font-bold">
+                REFERENCE PHARMACOPOEAIS: BP / USP / EP / IP
+              </div>
               <div className="font-bold">USES:</div>
-              {(productData.uses || [
-                "1. ANTIMALARIAL DRUG (see WHO / national regulations)",
-                "2. FLAVORING AGENT IN BEVERAGES (max: 83mg/L)"
-              ]).map((use, index) => (
-                <div key={index} className="ml-4">{use}</div>
+              {(
+                productData.uses || [
+                  "1. ANTIMALARIAL DRUG (see WHO / national regulations)",
+                  "2. FLAVORING AGENT IN BEVERAGES (max: 83mg/L)",
+                ]
+              ).map((use, index) => (
+                <div key={index} className="ml-4">
+                  {use}
+                </div>
               ))}
               <div className="font-bold">
-                STORAGE CONDITIONS: {productData.storageConditions || "ambient conditions not exceeding 30°C-70% RH"}
+                STORAGE CONDITIONS:{" "}
+                {productData.storageConditions ||
+                  "ambient conditions not exceeding 30°C-70% RH"}
               </div>
             </div>
 
@@ -397,35 +438,51 @@ export function LabelPreview({
               <div className="flex-2 space-y-3">
                 {/* Hazard Statements */}
                 <div className="bg-green-600 text-white p-2">
-                  <div className="font-bold text-xs mb-1">HAZARD STATEMENT:</div>
-                  {(productData.hazardStatements || [
-                    "H302: Harmful if swallowed.",
-                    "H317: May cause an allergic skin reaction.",
-                    "H335: May cause respiratory irritation"
-                  ]).map((hazard, index) => (
-                    <div key={index} className="text-xs">{hazard}</div>
+                  <div className="font-bold text-xs mb-1">
+                    HAZARD STATEMENT:
+                  </div>
+                  {(
+                    productData.hazardStatements || [
+                      "H302: Harmful if swallowed.",
+                      "H317: May cause an allergic skin reaction.",
+                      "H335: May cause respiratory irritation",
+                    ]
+                  ).map((hazard, index) => (
+                    <div key={index} className="text-xs">
+                      {hazard}
+                    </div>
                   ))}
                 </div>
 
                 {/* Precautionary Statements */}
                 <div className="bg-green-600 text-white p-2">
-                  <div className="font-bold text-xs mb-1">PRECAUTIONARY STATEMENT PREVENTION:</div>
-                  {(productData.precautionaryStatements || [
-                    "P102: Keep out of reach of children.",
-                    "P103: Read label before use.",
-                    "P232: Protect from moisture",
-                    "P233: Keep container tightly closed.",
-                    "P270: Do not eat, drink or smoke when using this product."
-                  ]).slice(0, 5).map((precaution, index) => (
-                    <div key={index} className="text-xs">{precaution}</div>
-                  ))}
+                  <div className="font-bold text-xs mb-1">
+                    PRECAUTIONARY STATEMENT PREVENTION:
+                  </div>
+                  {(
+                    productData.precautionaryStatements || [
+                      "P102: Keep out of reach of children.",
+                      "P103: Read label before use.",
+                      "P232: Protect from moisture",
+                      "P233: Keep container tightly closed.",
+                      "P270: Do not eat, drink or smoke when using this product.",
+                    ]
+                  )
+                    .slice(0, 5)
+                    .map((precaution, index) => (
+                      <div key={index} className="text-xs">
+                        {precaution}
+                      </div>
+                    ))}
                 </div>
               </div>
 
               <div className="flex-1 text-center space-y-4">
                 {/* Net Weight */}
                 <div>
-                  <div className="text-green-600 font-bold text-sm">Net weight</div>
+                  <div className="text-green-600 font-bold text-sm">
+                    Net weight
+                  </div>
                   <div className="text-green-600 font-bold text-3xl">
                     {productData.netWeight || "25"} Kg
                   </div>
@@ -433,7 +490,9 @@ export function LabelPreview({
 
                 {/* Warning */}
                 <div>
-                  <div className="text-red-600 font-bold text-lg mb-2">WARNING</div>
+                  <div className="text-red-600 font-bold text-lg mb-2">
+                    WARNING
+                  </div>
                   <div className="w-16 h-16 border-4 border-red-600 bg-white mx-auto flex items-center justify-center">
                     <span className="text-red-600 text-3xl font-bold">!</span>
                   </div>
@@ -445,12 +504,20 @@ export function LabelPreview({
             <div className="bg-green-600 text-white p-3 flex justify-between items-center">
               <div className="w-12 h-12 border-2 border-white rounded-full flex items-center justify-center">
                 <div className="text-xs text-center leading-tight">
-                  BUKAVU<br />PHARMAKINA
+                  BUKAVU
+                  <br />
+                  PHARMAKINA
                 </div>
               </div>
               <div className="text-right text-xs">
-                <div>Manufactured by {productData.manufacturer?.name || "PHARMAKINA S.A."}</div>
-                <div>{productData.manufacturer?.address || "Km4, Route de Goma, P.O. Box 1240 BUKAVU"}</div>
+                <div>
+                  Manufactured by{" "}
+                  {productData.manufacturer?.name || "PHARMAKINA S.A."}
+                </div>
+                <div>
+                  {productData.manufacturer?.address ||
+                    "Km4, Route de Goma, P.O. Box 1240 BUKAVU"}
+                </div>
                 {productData.manufacturer?.phone && (
                   <div>Tel. {productData.manufacturer.phone}</div>
                 )}
@@ -458,7 +525,8 @@ export function LabelPreview({
                   <div>E-Mail : {productData.manufacturer.email}</div>
                 )}
                 <div className="font-bold">
-                  {productData.manufacturer?.country || "Democratic Republic of Congo"}
+                  {productData.manufacturer?.country ||
+                    "Democratic Republic of Congo"}
                 </div>
               </div>
             </div>
@@ -467,25 +535,29 @@ export function LabelPreview({
             {generatedCode && (
               <div className="barcode-container border-t-2 border-gray-300 pt-4 mt-4 text-center">
                 <div className="font-mono font-bold text-sm mb-2">
-                  Code de Traçabilité: {(() => {
+                  Code de Traçabilité:{" "}
+                  {(() => {
                     try {
                       const parsed = JSON.parse(generatedCode);
-                      return parsed.trackingCode || parsed.code || generatedCode;
+                      return (
+                        parsed.trackingCode || parsed.code || generatedCode
+                      );
                     } catch {
                       return generatedCode;
                     }
                   })()}
                 </div>
                 {barcodeDataURL && (
-                  <img 
+                  <img
                     src={barcodeDataURL}
                     alt="Product Information Barcode"
                     className="barcode-image mx-auto max-w-full h-auto"
-                    style={{ maxWidth: '300px', height: '80px' }}
+                    style={{ maxWidth: "300px", height: "80px" }}
                   />
                 )}
                 <div className="text-xs text-muted-foreground mt-2">
-                  Barcode contains: Product name, code, dates, weight, manufacturer
+                  Barcode contains: Product name, code, dates, weight,
+                  manufacturer
                 </div>
               </div>
             )}
@@ -501,11 +573,11 @@ export function LabelPreview({
             -webkit-print-color-adjust: exact;
             color-adjust: exact;
           }
-          
+
           .barcode-container {
             page-break-inside: avoid;
           }
-          
+
           .barcode-image {
             max-width: 300px !important;
             height: 80px !important;
