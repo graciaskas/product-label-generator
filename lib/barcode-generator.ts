@@ -266,4 +266,91 @@ export const downloadEAN128Barcode = (gs1Data: string, filename?: string) => {
   link.click();
 };
 
+// Improved barcode generation with better readability
+export const generateEAN128BarcodeDataURL = (gs1Data: string): string => {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  
+  if (!ctx) return '';
+
+  // Set larger canvas dimensions for better readability
+  canvas.width = 600;
+  canvas.height = 150;
+
+  // Clear canvas with white background
+  ctx.fillStyle = 'white';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // EAN-128 patterns
+  const START_PATTERN = '11010000100';
+  const STOP_PATTERN = '1100011101011';
+  const FNC1_PATTERN = '11110101000';
+
+  // Simplified Code 128 patterns for basic characters
+  const CODE128_PATTERNS: { [key: string]: string } = {
+    '0': '11011001100', '1': '11001101100', '2': '11001100110', '3': '10010011000',
+    '4': '10010001100', '5': '10010001100', '6': '10011001000', '7': '10011000100',
+    '8': '10001100100', '9': '11001001000', '(': '11110111010', ')': '11000010100',
+    'A': '11010001000', 'B': '11000101000', 'C': '10110001000', 'D': '10001101000',
+    'E': '10001100010', 'F': '10110000100', 'G': '10000110100', 'H': '11000100010',
+    'I': '11001000010', 'J': '11110100010', 'K': '10110111000', 'L': '10110001110',
+    'M': '10001101110', 'N': '10111011000', 'O': '10111000110', 'P': '10001110110',
+    'Q': '11101110110', 'R': '11010001110', 'S': '11000101110', 'T': '11011101000',
+    'U': '11011100010', 'V': '11011101110', 'W': '11101011000', 'X': '11101000110',
+    'Y': '11100010110', 'Z': '11101101000', '/': '10101111000'
+  };
+
+  // Build barcode pattern
+  let barcodePattern = START_PATTERN + FNC1_PATTERN;
+  
+  for (let char of gs1Data) {
+    const pattern = CODE128_PATTERNS[char] || CODE128_PATTERNS['0'];
+    barcodePattern += pattern;
+  }
+  
+  barcodePattern += STOP_PATTERN;
+
+  // Draw barcode with improved readability
+  const barWidth = 2; // Increased bar width
+  const barHeight = 80; // Increased bar height
+  const startX = 50;
+  const startY = 20;
+
+  ctx.fillStyle = 'black';
+  let currentX = startX;
+
+  // Draw bars
+  for (let i = 0; i < barcodePattern.length && currentX < canvas.width - 50; i++) {
+    if (barcodePattern[i] === '1') {
+      ctx.fillRect(currentX, startY, barWidth, barHeight);
+    }
+    currentX += barWidth;
+  }
+
+  // Add human-readable text with better formatting
+  ctx.fillStyle = 'black';
+  ctx.font = 'bold 12px monospace';
+  ctx.textAlign = 'center';
+  
+  // Display GS1 data in readable format
+  const centerX = canvas.width / 2;
+  const textY = startY + barHeight + 20;
+  
+  // Split long text into multiple lines if needed
+  if (gs1Data.length > 40) {
+    const firstLine = gs1Data.substring(0, 40);
+    const secondLine = gs1Data.substring(40);
+    ctx.fillText(firstLine, centerX, textY);
+    ctx.fillText(secondLine, centerX, textY + 15);
+  } else {
+    ctx.fillText(gs1Data, centerX, textY);
+  }
+  
+  // Add format label
+  ctx.font = '10px Arial';
+  ctx.fillText('EAN-128 (GS1-128)', centerX, textY + 30);
+
+  return canvas.toDataURL('image/png');
+};
+
 export const downloadBarcode = downloadEAN128Barcode;
