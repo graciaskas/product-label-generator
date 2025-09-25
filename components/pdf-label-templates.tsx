@@ -1,583 +1,351 @@
-import React from "react";
+"use client";
+
+import { useState, useRef, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Document,
-  Page,
-  Text,
-  View,
-  StyleSheet,
-  Image,
-} from "@react-pdf/renderer";
-import type { ProductData, LabelTemplate } from "./label-generator";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Copy, RefreshCw, QrCode, Download } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { generateEAN128Barcode, generateEAN128BarcodeDataURL } from "@/lib/barcode-generator";
+import type { ProductData } from "./label-generator";
 
-// Define styles for PDF
-const styles = StyleSheet.create({
-  page: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    backgroundColor: "#ffffff",
-    padding: 10,
-  },
-  labelContainer: {
-    width: "48%",
-    margin: "1%",
-    border: "2px solid #16a34a",
-    backgroundColor: "#ffffff",
-    fontSize: 8,
-    fontFamily: "Helvetica",
-  },
-  // Template 1 Styles
-  template1Header: {
-    backgroundColor: "#16a34a",
-    color: "#ffffff",
-    padding: 8,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-  },
-  template1HeaderText: {
-    flex: 1,
-  },
-  template1CompanyName: {
-    fontSize: 9,
-    fontWeight: "bold",
-    marginBottom: 2,
-  },
-  template1Address: {
-    fontSize: 7,
-    lineHeight: 1.2,
-  },
-  template1Logo: {
-    width: 30,
-    height: 30,
-    border: "2px solid #ffffff",
-    borderRadius: 15,
-    backgroundColor: "#16a34a",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  template1LogoText: {
-    fontSize: 6,
-    color: "#ffffff",
-    textAlign: "center",
-    lineHeight: 1,
-  },
-  template1Title: {
-    backgroundColor: "#16a34a",
-    padding: 6,
-  },
-  template1TitleInner: {
-    backgroundColor: "#ffffff",
-    color: "#16a34a",
-    borderRadius: 10,
-    padding: 6,
-    textAlign: "center",
-    fontSize: 9,
-    fontWeight: "bold",
-  },
-  template1Content: {
-    padding: 8,
-    fontSize: 7,
-    lineHeight: 1.3,
-  },
-  template1Row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 1,
-  },
-  template1Label: {
-    fontWeight: "bold",
-  },
-  template1Value: {
-    flex: 1,
-    textAlign: "right",
-  },
-  template1StorageConditions: {
-    textAlign: "center",
-    color: "#dc2626",
-    fontWeight: "bold",
-    marginVertical: 4,
-    fontSize: 7,
-  },
-  template1Manufacturer: {
-    marginTop: 4,
-  },
-  template1ManufacturerName: {
-    color: "#16a34a",
-    fontWeight: "bold",
-  },
-  template1ShippingMarks: {
-    marginTop: 6,
-    fontSize: 8,
-    fontWeight: "bold",
-  },
-  // Template 2 Styles
-  template2Header: {
-    border: "3px solid #16a34a",
-    padding: 6,
-    marginBottom: 4,
-    textAlign: "center",
-  },
-  template2ProductName: {
-    color: "#dc2626",
-    fontSize: 10,
-    fontWeight: "bold",
-    marginBottom: 2,
-  },
-  template2CasNumber: {
-    fontSize: 8,
-    fontWeight: "bold",
-    marginBottom: 1,
-  },
-  template2Origin: {
-    fontSize: 8,
-    fontWeight: "bold",
-    marginBottom: 1,
-  },
-  template2Taste: {
-    fontSize: 6,
-  },
-  template2InfoSection: {
-    backgroundColor: "#f3f4f6",
-    padding: 6,
-    marginBottom: 4,
-    fontSize: 6,
-    lineHeight: 1.2,
-  },
-  template2InfoTitle: {
-    fontWeight: "bold",
-    marginBottom: 1,
-  },
-  template2MainContent: {
-    flexDirection: "row",
-    marginBottom: 4,
-  },
-  template2LeftColumn: {
-    flex: 2,
-    paddingRight: 4,
-  },
-  template2RightColumn: {
-    flex: 1,
-    textAlign: "center",
-    alignItems: "center",
-  },
-  template2HazardSection: {
-    backgroundColor: "#16a34a",
-    color: "#ffffff",
-    padding: 4,
-    marginBottom: 6,
-    fontSize: 6,
-    lineHeight: 1.2,
-  },
-  template2SectionTitle: {
-    fontWeight: "bold",
-    marginBottom: 2,
-    fontSize: 6,
-  },
-  template2NetWeight: {
-    marginBottom: 8,
-  },
-  template2NetWeightLabel: {
-    color: "#16a34a",
-    fontSize: 7,
-    fontWeight: "bold",
-  },
-  template2NetWeightValue: {
-    color: "#16a34a",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  template2Warning: {
-    alignItems: "center",
-  },
-  template2WarningTitle: {
-    color: "#dc2626",
-    fontSize: 10,
-    fontWeight: "bold",
-    marginBottom: 4,
-  },
-  template2WarningIcon: {
-    width: 32,
-    height: 32,
-    border: "3px solid #dc2626",
-    backgroundColor: "#ffffff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  template2WarningIconText: {
-    color: "#dc2626",
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  template2Footer: {
-    backgroundColor: "#16a34a",
-    color: "#ffffff",
-    padding: 6,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    fontSize: 6,
-  },
-  template2FooterLogo: {
-    width: 24,
-    height: 24,
-    border: "2px solid #ffffff",
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  template2FooterLogoText: {
-    fontSize: 5,
-    color: "#ffffff",
-    textAlign: "center",
-    lineHeight: 1,
-  },
-  template2FooterText: {
-    textAlign: "right",
-    flex: 1,
-    lineHeight: 1.2,
-  },
-  template2FooterCountry: {
-    fontWeight: "bold",
-  },
-  // Barcode Styles
-  barcodeContainer: {
-    borderTop: "2px solid #d1d5db",
-    paddingTop: 6,
-    marginTop: 6,
-    alignItems: "center",
-  },
-  barcodeLabel: {
-    fontSize: 7,
-    fontWeight: "bold",
-    marginBottom: 4,
-    fontFamily: "Courier",
-  },
-  barcodeImage: {
-    width: 150,
-    height: 40,
-  },
-});
-
-interface LabelPDFDocumentProps {
-  template: LabelTemplate;
+interface CodeGeneratorProps {
   productData: ProductData;
   generatedCode: string;
-  barcodeDataURL: string;
-  copies: number;
+  onGenerateCode: () => void;
 }
 
-const formatDate = (dateString: string) => {
-  if (!dateString) return "";
-  const [year, month] = dateString.split("-");
-  return `${month}/${year}`;
-};
+type CodeFormat = "standard" | "batch" | "qr" | "barcode" | "custom";
 
-const Template1Label: React.FC<{
-  productData: ProductData;
-  generatedCode: string;
-  barcodeDataURL: string;
-}> = ({ productData, generatedCode, barcodeDataURL }) => (
-  <View style={styles.labelContainer}>
-    {/* Header */}
-    <View style={styles.template1Header}>
-      <View style={styles.template1HeaderText}>
-        <Text style={styles.template1CompanyName}>
-          {productData.manufacturer?.name || "PHARMAKINA S.A."}
-        </Text>
-        <Text style={styles.template1Address}>
-          {productData.manufacturer?.address ||
-            "Km4, Route de Goma, P.O. Box 1240 BUKAVU"}
-        </Text>
-        <Text style={styles.template1Address}>
-          {productData.manufacturer?.country || "Democratic Republic of Congo"}
-        </Text>
-      </View>
-      <View style={styles.template1Logo}>
-        <Text style={styles.template1LogoText}>BUKAVU{"\n"}PHARMAKINA</Text>
-      </View>
-    </View>
+const generateBarcode = (text: string, canvas: HTMLCanvasElement) => {
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
 
-    {/* Title */}
-    <View style={styles.template1Title}>
-      <View style={styles.template1TitleInner}>
-        <Text>{productData.name || "NOM DU PRODUIT"}</Text>
-      </View>
-    </View>
+  // Set canvas dimensions
+  canvas.width = 300;
+  canvas.height = 80;
 
-    {/* Content */}
-    <View style={styles.template1Content}>
-      <View style={styles.template1Row}>
-        <Text style={styles.template1Label}>PRODUCT CODE/LOT N°</Text>
-        <Text style={styles.template1Value}>
-          : {productData.code || "HC25/L0000"}
-        </Text>
-      </View>
-      <View style={styles.template1Row}>
-        <Text> - Manufacturing date</Text>
-        <Text style={styles.template1Value}>
-          : {formatDate(productData.manufacturingDate) || "07/2025"}
-        </Text>
-      </View>
-      <View style={styles.template1Row}>
-        <Text> - Expiry date</Text>
-        <Text style={styles.template1Value}>
-          : {formatDate(productData.expiryDate) || "07/2030"}
-        </Text>
-      </View>
-      <View style={styles.template1Row}>
-        <Text> - Quantity: Gross Weight</Text>
-        <Text style={styles.template1Value}>
-          : {productData.grossWeight || "28,00"} Kg
-        </Text>
-      </View>
-      <View style={styles.template1Row}>
-        <Text> Net Weight</Text>
-        <Text style={styles.template1Value}>
-          : {productData.netWeight || "25,00"} Kg
-        </Text>
-      </View>
-      <View style={styles.template1Row}>
-        <Text style={styles.template1Label}>EXPORT L N°</Text>
-        <Text style={styles.template1Value}>
-          : {productData.exportLot || "- 00/25"}
-        </Text>
-      </View>
+  // Clear canvas
+  ctx.fillStyle = "white";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      <Text style={styles.template1StorageConditions}>
-        Storage conditions :{" "}
-        {productData.storageConditions || "Protect from light and humidity."}
-      </Text>
+  // Simple Code 128 style barcode generation
+  const barWidth = 2;
+  const barHeight = 50;
+  const startX = 20;
+  const startY = 10;
 
-      <View style={styles.template1Manufacturer}>
-        <View style={styles.template1Row}>
-          <Text style={styles.template1Label}>Manufacturer: </Text>
-          <Text
-            style={[styles.template1Value, styles.template1ManufacturerName]}
-          >
-            {productData.manufacturer?.name || "PHARMAKINA S.A."}
-          </Text>
-        </View>
-        <Text style={[styles.template1Address, { marginLeft: 40 }]}>
-          {productData.manufacturer?.address ||
-            "Km4, Route de Goma, P.O. Box 1240 BUKAVU"}
-        </Text>
-        <Text style={[styles.template1Address, { marginLeft: 40 }]}>
-          {productData.manufacturer?.country || "Democratic Republic of Congo"}
-        </Text>
-        <View style={styles.template1Row}>
-          <Text style={styles.template1Label}>Web site: </Text>
-          <Text style={styles.template1Value}>
-            {productData.manufacturer?.website || "www.pharmakina.com"}
-          </Text>
-        </View>
-      </View>
-
-      <Text style={styles.template1ShippingMarks}>SHIPPING MARKS: --</Text>
-
-      {/* Barcode Section */}
-      {generatedCode && (
-        <View style={styles.barcodeContainer}>
-          <Text style={styles.barcodeLabel}>
-            Code de Traçabilité: {(() => {
-              try {
-                const parsed = JSON.parse(generatedCode);
-                return parsed.trackingCode || parsed.code || generatedCode;
-              } catch {
-                return generatedCode;
-              }
-            })()}
-          </Text>
-          {barcodeDataURL && (
-            <Image src={barcodeDataURL} style={styles.barcodeImage} />
-          )}
-        </View>
-      )}
-    </View>
-  </View>
-);
-
-const Template2Label: React.FC<{
-  productData: ProductData;
-  generatedCode: string;
-  barcodeDataURL: string;
-}> = ({ productData, generatedCode, barcodeDataURL }) => (
-  <View style={styles.labelContainer}>
-    {/* Header */}
-    <View style={styles.template2Header}>
-      <Text style={styles.template2ProductName}>
-        {productData.name || "QUININE HYDROCHLORIDE DIHYDRATE"}
-      </Text>
-      <Text style={styles.template2CasNumber}>
-        CAS: {productData.casNumber || "6119-47-7"}
-      </Text>
-      <Text style={styles.template2Origin}>
-        {productData.origin || "POWDER OF NATURAL ORIGIN"}
-      </Text>
-      <Text style={styles.template2Taste}>(Very bitter taste)</Text>
-    </View>
-
-    {/* Info Section */}
-    <View style={styles.template2InfoSection}>
-      <Text style={styles.template2InfoTitle}>
-        REFERENCE PHARMACOPOEAIS: BP / USP / EP / IP
-      </Text>
-      <Text style={styles.template2InfoTitle}>USES:</Text>
-      {(
-        productData.uses || [
-          "1. ANTIMALARIAL DRUG (see WHO / national regulations)",
-          "2. FLAVORING AGENT IN BEVERAGES (max: 83mg/L)",
-        ]
-      ).map((use, index) => (
-        <Text key={index} style={{ marginLeft: 8 }}>
-          {use}
-        </Text>
-      ))}
-      <Text style={styles.template2InfoTitle}>
-        STORAGE CONDITIONS:{" "}
-        {productData.storageConditions ||
-          "ambient conditions not exceeding 30°C-70% RH"}
-      </Text>
-    </View>
-
-    {/* Main Content */}
-    <View style={styles.template2MainContent}>
-      <View style={styles.template2LeftColumn}>
-        {/* Hazard Statements */}
-        <View style={styles.template2HazardSection}>
-          <Text style={styles.template2SectionTitle}>HAZARD STATEMENT:</Text>
-          {(
-            productData.hazardStatements || [
-              "H302: Harmful if swallowed.",
-              "H317: May cause an allergic skin reaction.",
-              "H335: May cause respiratory irritation",
-            ]
-          ).map((hazard, index) => (
-            <Text key={index}>{hazard}</Text>
-          ))}
-        </View>
-
-        {/* Precautionary Statements */}
-        <View style={styles.template2HazardSection}>
-          <Text style={styles.template2SectionTitle}>
-            PRECAUTIONARY STATEMENT PREVENTION:
-          </Text>
-          {(
-            productData.precautionaryStatements || [
-              "P102: Keep out of reach of children.",
-              "P103: Read label before use.",
-              "P232: Protect from moisture",
-              "P233: Keep container tightly closed.",
-              "P270: Do not eat, drink or smoke when using this product.",
-            ]
-          )
-            .slice(0, 5)
-            .map((precaution, index) => (
-              <Text key={index}>{precaution}</Text>
-            ))}
-        </View>
-      </View>
-
-      <View style={styles.template2RightColumn}>
-        {/* Net Weight */}
-        <View style={styles.template2NetWeight}>
-          <Text style={styles.template2NetWeightLabel}>Net weight</Text>
-          <Text style={styles.template2NetWeightValue}>
-            {productData.netWeight || "25"} Kg
-          </Text>
-        </View>
-
-        {/* Warning */}
-        <View style={styles.template2Warning}>
-          <Text style={styles.template2WarningTitle}>WARNING</Text>
-          <View style={styles.template2WarningIcon}>
-            <Text style={styles.template2WarningIconText}>!</Text>
-          </View>
-        </View>
-      </View>
-    </View>
-
-    {/* Footer */}
-    <View style={styles.template2Footer}>
-      <View style={styles.template2FooterLogo}>
-        <Text style={styles.template2FooterLogoText}>
-          BUKAVU{"\n"}PHARMAKINA
-        </Text>
-      </View>
-      <View style={styles.template2FooterText}>
-        <Text>
-          Manufactured by {productData.manufacturer?.name || "PHARMAKINA S.A."}
-        </Text>
-        <Text>
-          {productData.manufacturer?.address ||
-            "Km4, Route de Goma, P.O. Box 1240 BUKAVU"}
-        </Text>
-        {productData.manufacturer?.phone && (
-          <Text>Tel. {productData.manufacturer.phone}</Text>
-        )}
-        {productData.manufacturer?.email && (
-          <Text>E-Mail : {productData.manufacturer.email}</Text>
-        )}
-        <Text style={styles.template2FooterCountry}>
-          {productData.manufacturer?.country || "Democratic Republic of Congo"}
-        </Text>
-      </View>
-    </View>
-
-    {/* Barcode Section */}
-    {generatedCode && (
-      <View style={styles.barcodeContainer}>
-        <Text style={styles.barcodeLabel}>
-          Code de Traçabilité: {(() => {
-            try {
-              const parsed = JSON.parse(generatedCode);
-              return parsed.trackingCode || parsed.code || generatedCode;
-            } catch {
-              return generatedCode;
-            }
-          })()}
-        </Text>
-        {barcodeDataURL && (
-          <Image src={barcodeDataURL} style={styles.barcodeImage} />
-        )}
-      </View>
-    )}
-  </View>
-);
-
-export const LabelPDFDocument: React.FC<LabelPDFDocumentProps> = ({
-  template,
-  productData,
-  generatedCode,
-  barcodeDataURL,
-  copies,
-}) => {
-  // Calculate number of pages needed (4 labels per page)
-  const labelsPerPage = 4;
-  const totalPages = Math.ceil(copies / labelsPerPage);
-
-  const pages = [];
-  for (let pageIndex = 0; pageIndex < totalPages; pageIndex++) {
-    const startIndex = pageIndex * labelsPerPage;
-    const endIndex = Math.min(startIndex + labelsPerPage, copies);
-    const labelsOnThisPage = endIndex - startIndex;
-
-    pages.push(
-      <Page key={pageIndex} size="A4" style={styles.page}>
-        {Array.from({ length: labelsOnThisPage }, (_, labelIndex) => {
-          const LabelComponent =
-            template.id === "template1" ? Template1Label : Template2Label;
-          return (
-            <LabelComponent
-              key={startIndex + labelIndex}
-              productData={productData}
-              generatedCode={generatedCode}
-              barcodeDataURL={barcodeDataURL}
-            />
-          );
-        })}
-      </Page>
-    );
+  // Convert text to binary pattern (simplified)
+  let binaryPattern = "";
+  for (let i = 0; i < text.length; i++) {
+    const charCode = text.charCodeAt(i);
+    binaryPattern += charCode % 2 === 0 ? "101" : "110";
   }
 
-  return <Document>{pages}</Document>;
+  // Draw bars
+  ctx.fillStyle = "black";
+  for (let i = 0; i < binaryPattern.length && i < 100; i++) {
+    if (binaryPattern[i] === "1") {
+      ctx.fillRect(startX + i * barWidth, startY, barWidth, barHeight);
+    }
+  }
+
+  // Add text below barcode
+  ctx.fillStyle = "black";
+  ctx.font = "12px monospace";
+  ctx.textAlign = "center";
+  ctx.fillText(text, canvas.width / 2, startY + barHeight + 20);
 };
+
+export function CodeGenerator({
+  productData,
+  generatedCode,
+  onGenerateCode,
+}: CodeGeneratorProps) {
+  const [codeFormat, setCodeFormat] = useState<CodeFormat>("barcode");
+  const [customPrefix, setCustomPrefix] = useState("");
+  const [batchSize, setBatchSize] = useState("1");
+  const [generatedCodes, setGeneratedCodes] = useState<string[]>([]);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { toast } = useToast();
+
+  const generateCode = (format: CodeFormat, index?: number) => {
+    const timestamp = Date.now().toString(36).toUpperCase();
+    const code = productData.code.replace(/[^A-Z0-9]/g, "");
+    const manufacturingDate = productData.manufacturingDate.replace(/-/g, "");
+        break;
+      case "barcode":
+        // Generate EAN-128 (GS1-128) barcode with specific AIs
+        return generateProductInfoString(productData);
+        break;
+      case "custom":
+        const prefix = customPrefix || "CUSTOM";
+        trackingCode = `${prefix}-${code}-${timestamp}`;
+        break;
+      default:
+        trackingCode = `${code}-${timestamp}`;
+    }
+
+    return trackingCode;
+  };
+
+  const handleGenerateCode = () => {
+    if (codeFormat === "batch") {
+      const size = Number.parseInt(batchSize) || 1;
+      const codes = Array.from({ length: size }, (_, i) =>
+        generateCode("batch", i + 1)
+      );
+      setGeneratedCodes(codes);
+    } else {
+      const code = generateCode(codeFormat);
+      setGeneratedCodes([code]);
+      onGenerateCode();
+    }
+  };
+
+  useEffect(() => {
+    if (
+      generatedCodes.length > 0 &&
+      codeFormat === "barcode" &&
+      canvasRef.current
+    ) {
+      generateBarcode(generatedCodes[0], canvasRef.current);
+    }
+  }, [generatedCodes, codeFormat]);
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast({
+      title: "Copié !",
+      description: "Le code a été copié dans le presse-papiers.",
+    });
+  };
+
+  const copyAllCodes = () => {
+    const allCodes = generatedCodes.join("\n");
+    navigator.clipboard.writeText(allCodes);
+    toast({
+      title: "Tous les codes copiés !",
+      description: `${generatedCodes.length} codes copiés dans le presse-papiers.`,
+    });
+  };
+
+  const downloadBarcode = () => {
+    if (canvasRef.current) {
+      const link = document.createElement("a");
+      link.download = `barcode-${generatedCodes[0]}.png`;
+      link.href = canvasRef.current.toDataURL();
+      link.click();
+    }
+  };
+
+  const exportCodes = () => {
+    const csvContent = [
+      "Code,Produit,Date_Fabrication,Date_Expiration,Poids_Net",
+      ...generatedCodes.map(
+        (code) =>
+          `${code},${productData.name},${productData.manufacturingDate},${productData.expiryDate},${productData.netWeight}`
+      ),
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `codes-tracabilite-${productData.code || "produit"}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Configuration du Code</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="codeFormat">Format du Code</Label>
+            <Select
+              value={codeFormat}
+              onValueChange={(value: CodeFormat) => setCodeFormat(value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Sélectionnez un format" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="standard">
+                  Standard (PRODUIT-TIMESTAMP)
+                </SelectItem>
+                <SelectItem value="batch">
+                  Lot (PRODUIT-DATE-LOT-RANDOM)
+                </SelectItem>
+                <SelectItem value="qr">
+                  QR Code (QR-PRODUIT-TIMESTAMP-RANDOM)
+                </SelectItem>
+                <SelectItem value="barcode">
+                  Code-barres (PRODUITDATERANDOM)
+                </SelectItem>
+                <SelectItem value="custom">Personnalisé</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {codeFormat === "custom" && (
+            <div className="space-y-2">
+              <Label htmlFor="customPrefix">Préfixe Personnalisé</Label>
+              <Input
+                id="customPrefix"
+                value={customPrefix}
+                onChange={(e) => setCustomPrefix(e.target.value)}
+                placeholder="ex: PHARMA, MED, etc."
+              />
+            </div>
+          )}
+
+          {codeFormat === "batch" && (
+            <div className="space-y-2">
+              <Label htmlFor="batchSize">Nombre de Codes à Générer</Label>
+              <Input
+                id="batchSize"
+                type="number"
+                min="1"
+                max="1000"
+                value={batchSize}
+                onChange={(e) => setBatchSize(e.target.value)}
+                placeholder="1"
+              />
+            </div>
+          )}
+
+          <Button
+            onClick={handleGenerateCode}
+            className="w-full"
+            disabled={!productData.code}
+          >
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Générer {codeFormat === "batch" ? "les Codes" : "le Code"}
+          </Button>
+        </CardContent>
+      </Card>
+
+      {generatedCodes.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center justify-between">
+              Codes Générés
+              <Badge variant="secondary">{generatedCodes.length} code(s)</Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" size="sm" onClick={copyAllCodes}>
+                <Copy className="h-4 w-4 mr-2" />
+                Copier Tous
+              </Button>
+              <Button variant="outline" size="sm" onClick={exportCodes}>
+                <QrCode className="h-4 w-4 mr-2" />
+                Exporter CSV
+              </Button>
+              {codeFormat === "barcode" && (
+                <Button variant="outline" size="sm" onClick={downloadBarcode}>
+                  <Download className="h-4 w-4 mr-2" />
+                  Télécharger Code-barres
+                </Button>
+              )}
+            </div>
+
+            {codeFormat === "barcode" && generatedCodes.length > 0 && (
+              <div className="flex justify-center p-4 bg-white border rounded">
+                <canvas
+                  ref={canvasRef}
+                  className="border"
+                  style={{ maxWidth: "100%", height: "auto" }}
+                />
+              </div>
+            )}
+
+            <div className="space-y-2 max-h-60 overflow-y-auto">
+              {generatedCodes.map((code, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between bg-muted p-3 rounded"
+                >
+                  <code className="font-mono text-sm">{code}</code>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => copyToClipboard(code)}
+                  >
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Informations du Code</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <span className="font-semibold">Format:</span>
+              <span className="ml-2 capitalize">{codeFormat}</span>
+            </div>
+            <div>
+              <span className="font-semibold">Produit:</span>
+              <span className="ml-2">{productData.code || "Non défini"}</span>
+            </div>
+            <div>
+              <span className="font-semibold">Date Fab.:</span>
+              <span className="ml-2">
+                {productData.manufacturingDate || "Non définie"}
+              </span>
+            </div>
+            <div>
+              <span className="font-semibold">Date Exp.:</span>
+              <span className="ml-2">
+                {productData.expiryDate || "Non définie"}
+              </span>
+            </div>
+          </div>
+
+          <div className="pt-3 border-t">
+            <h4 className="font-semibold mb-2">Formats Disponibles:</h4>
+            <div className="space-y-1 text-xs text-muted-foreground">
+              <div>
+                • <strong>Standard:</strong> Format simple avec timestamp
+              </div>
+              <div>
+                • <strong>Lot:</strong> Inclut date de fabrication et numéro de
+                lot
+              </div>
+              <div>
+                • <strong>QR Code:</strong> Optimisé pour les codes QR
+              </div>
+              <div>
+                • <strong>Code-barres:</strong> Format compact sans séparateurs
+              </div>
+              <div>
+                • <strong>Personnalisé:</strong> Avec votre propre préfixe
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
