@@ -253,8 +253,8 @@ const styles = StyleSheet.create({
     fontFamily: "Courier",
   },
   barcodeImage: {
-    width: 350,
-    height: 80,
+    width: 250,
+    height: 70,
   },
 });
 
