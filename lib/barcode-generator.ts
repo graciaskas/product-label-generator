@@ -267,6 +267,7 @@ export const downloadBarcode = (text: string, filename?: string) => {
 };
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 // Improved barcode generation with better readability
 export const generateEAN128BarcodeDataURL = (gs1Data: string): string => {
   const canvas = document.createElement('canvas');
@@ -397,3 +398,6 @@ export const parseProductInfoFromBarcode = (scannedData: string): any => {
 =======
 };
 >>>>>>> parent of 4650916 (Implement EAN-128 (GS1-128) Barcode Format)
+=======
+export const downloadBarcode = downloadEAN128Barcode;
+>>>>>>> parent of 6be3b3e (Fix Code Generator Syntax and Improve Barcode Readability)
