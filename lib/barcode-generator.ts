@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // EAN-128 (GS1-128) Barcode Generator for Pharmaceutical Products
 export const generateEAN128Barcode = (productData: any): string => {
   // GS1 Application Identifiers (AI)
@@ -109,81 +110,70 @@ const calculateGTINCheckDigit = (code: string): string => {
 
 // Generate EAN-128 barcode pattern for display
 export const generateEAN128BarcodeDataURL = (gs1Data: string): string => {
+=======
+export const generateBarcodeDataURL = (text: string): string => {
+  // Create a canvas element
+>>>>>>> parent of 4650916 (Implement EAN-128 (GS1-128) Barcode Format)
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
   
   if (!ctx) return '';
 
-  // Set canvas dimensions for EAN-128
-  canvas.width = 400;
-  canvas.height = 100;
+  // Set canvas dimensions
+  canvas.width = 300;
+  canvas.height = 80;
 
   // Clear canvas with white background
   ctx.fillStyle = 'white';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // EAN-128 start pattern: 11010000100
-  const START_PATTERN = '11010000100';
-  const STOP_PATTERN = '1100011101011'; // Stop pattern
-  const FNC1_PATTERN = '11110101000'; // FNC1 character for GS1
-
-  // Code 128 character set patterns (simplified subset)
-  const CODE128_PATTERNS: { [key: string]: string } = {
-    '0': '11011001100', '1': '11001101100', '2': '11001100110', '3': '10010011000',
-    '4': '10010001100', '5': '10001001100', '6': '10011001000', '7': '10011000100',
-    '8': '10001100100', '9': '11001001000', '(': '11110111010', ')': '11000010100',
-    'A': '11010001000', 'B': '11000101000', 'C': '10110001000', 'D': '10001101000',
-    'E': '10001100010', 'F': '10110000100', 'G': '10000110100', 'H': '11000100010',
-    'I': '11001000010', 'J': '11110100010', 'K': '10110111000', 'L': '10110001110',
-    'M': '10001101110', 'N': '10111011000', 'O': '10111000110', 'P': '10001110110',
-    'Q': '11101110110', 'R': '11010001110', 'S': '11000101110', 'T': '11011101000',
-    'U': '11011100010', 'V': '11011101110', 'W': '11101011000', 'X': '11101000110',
-    'Y': '11100010110', 'Z': '11101101000'
-  };
-
-  // Build complete barcode pattern
-  let barcodePattern = START_PATTERN + FNC1_PATTERN;
-  
-  // Convert GS1 data to barcode pattern
-  for (let char of gs1Data) {
-    const pattern = CODE128_PATTERNS[char] || CODE128_PATTERNS['0'];
-    barcodePattern += pattern;
-  }
-  
-  barcodePattern += STOP_PATTERN;
-
-  // Draw barcode
-  const barWidth = 1;
-  const barHeight = 60;
+  // Simple Code 128 style barcode generation
+  const barWidth = 2;
+  const barHeight = 50;
   const startX = 20;
   const startY = 10;
 
-  ctx.fillStyle = 'black';
-  let currentX = startX;
-
-  for (let i = 0; i < barcodePattern.length && currentX < canvas.width - 20; i++) {
-    if (barcodePattern[i] === '1') {
-      ctx.fillRect(currentX, startY, barWidth, barHeight);
+  // Convert text to binary pattern (simplified Code 128 simulation)
+  let binaryPattern = '';
+  for (let i = 0; i < text.length; i++) {
+    const charCode = text.charCodeAt(i);
+    // Create alternating pattern based on character codes
+    if (charCode % 4 === 0) {
+      binaryPattern += '11001100';
+    } else if (charCode % 4 === 1) {
+      binaryPattern += '10011001';
+    } else if (charCode % 4 === 2) {
+      binaryPattern += '11010010';
+    } else {
+      binaryPattern += '10100110';
     }
-    currentX += barWidth;
   }
 
-  // Add human-readable text
-  ctx.fillStyle = 'black';
-  ctx.font = '10px monospace';
-  ctx.textAlign = 'center';
-  
-  // Display the GS1 data
-  const displayText = gs1Data.length > 50 ? gs1Data.substring(0, 50) + '...' : gs1Data;
-  ctx.fillText(displayText, canvas.width / 2, startY + barHeight + 15);
-  
-  // Add format label
-  ctx.font = '8px Arial';
-  ctx.fillText('EAN-128 (GS1-128)', canvas.width / 2, startY + barHeight + 30);
+  // Add start and end patterns
+  binaryPattern = '11010010000' + binaryPattern + '11010011000';
 
+  // Draw bars
+  ctx.fillStyle = 'black';
+  const maxBars = Math.min(binaryPattern.length, 120); // Limit to fit canvas
+  const actualBarWidth = Math.min(barWidth, (canvas.width - 40) / maxBars);
+  
+  for (let i = 0; i < maxBars; i++) {
+    if (binaryPattern[i] === '1') {
+      ctx.fillRect(startX + i * actualBarWidth, startY, actualBarWidth, barHeight);
+    }
+  }
+
+  // Add text below barcode
+  ctx.fillStyle = 'black';
+  ctx.font = '12px monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText(text, canvas.width / 2, startY + barHeight + 20);
+
+  // Return data URL
   return canvas.toDataURL('image/png');
 };
 
+<<<<<<< HEAD
 // Parse EAN-128 barcode data
 export const parseEAN128Barcode = (scannedData: string): any => {
   const result: any = {
@@ -260,12 +250,17 @@ export const parseProductInfoFromBarcode = parseEAN128Barcode;
 // Download barcode as image
 export const downloadEAN128Barcode = (gs1Data: string, filename?: string) => {
   const dataURL = generateEAN128BarcodeDataURL(gs1Data);
+=======
+export const downloadBarcode = (text: string, filename?: string) => {
+  const dataURL = generateBarcodeDataURL(text);
+>>>>>>> parent of 4650916 (Implement EAN-128 (GS1-128) Barcode Format)
   const link = document.createElement('a');
-  link.download = filename || `ean128-barcode-${Date.now()}.png`;
+  link.download = filename || `barcode-${text}.png`;
   link.href = dataURL;
   link.click();
 };
 
+<<<<<<< HEAD
 // Improved barcode generation with better readability
 export const generateEAN128BarcodeDataURL = (gs1Data: string): string => {
   const canvas = document.createElement('canvas');
@@ -354,3 +349,31 @@ export const generateEAN128BarcodeDataURL = (gs1Data: string): string => {
 };
 
 export const downloadBarcode = downloadEAN128Barcode;
+=======
+// Generate product information string for barcode encoding
+export const generateProductInfoString = (productData: any): string => {
+  const info = {
+    name: productData.name || '',
+    code: productData.code || '',
+    mfgDate: productData.manufacturingDate || '',
+    expDate: productData.expiryDate || '',
+    netWeight: productData.netWeight || '',
+    manufacturer: productData.manufacturer?.name || '',
+    storageConditions: productData.storageConditions || '',
+    batchCode: productData.exportLot || ''
+  };
+
+  // Create a structured string that can be parsed when scanned
+  return JSON.stringify(info);
+};
+
+// Parse product information from scanned barcode
+export const parseProductInfoFromBarcode = (scannedData: string): any => {
+  try {
+    return JSON.parse(scannedData);
+  } catch (error) {
+    // If not JSON, return as simple string
+    return { rawData: scannedData };
+  }
+};
+>>>>>>> parent of 4650916 (Implement EAN-128 (GS1-128) Barcode Format)
