@@ -1,1 +1,2 @@
-We tokens ends don't clear the file's content with something like "{"code":"rate-limited","message":"You have hit the rate limit. Please upgrade to keep chatting.","providerLimitHit":false,"isRetryable":true}"
+We tokens ends don't clear the file's content with something like "{"code":"rate-limited","message":"You have hit the rate limit. Please upgrade to keep chatting.","providerLimitHit":false,"isRetryable":true}".
+Try to be more attentive and precise in the answer and use fewer tokens
