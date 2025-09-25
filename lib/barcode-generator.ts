@@ -1,18 +1,16 @@
 // EAN-128 (GS1-128) Barcode Generator for Pharmaceutical Products
 export const generateEAN128Barcode = (productData: any): string => {
   // GS1 Application Identifiers (AI)
-  const AI_GTIN = '01';           // Global Trade Item Number
+  const AI_GTIN = '01';           // Global Trade Item Number (Product Code)
   const AI_LOT = '10';            // Batch/Lot Number
   const AI_EXPIRY = '17';         // Expiry Date (YYMMDD)
-  const AI_COUNTRY = '421';       // Country of Origin
-  const AI_MANUFACTURER = '414';  // GLN of Manufacturer
+  const AI_WEIGHT = '3103';       // Net Weight in kg (with 3 decimal places)
 
-  // Extract data
+  // Extract and format data
   const productCode = productData.code || '';
-  const expiryDate = formatExpiryDateForGS1(productData.expiryDate);
-  const countryCode = '243'; // Democratic Republic of Congo
-  const manufacturerCode = '1240'; // PHARMAKINA manufacturer code
   const lotNumber = productData.code || productCode; // Use product code as lot number
+  const expiryDate = formatExpiryDateForGS1(productData.expiryDate);
+  const netWeight = formatWeightForGS1(productData.netWeight);
 
   // Build GS1-128 data string
   // Format: (AI)Data(AI)Data...
@@ -22,21 +20,20 @@ export const generateEAN128Barcode = (productData: any): string => {
   const gtin = padGTIN(productCode);
   gs1Data += `(${AI_GTIN})${gtin}`;
   
-  // Add Lot Number
+  // Add Lot Number (set by user)
   if (lotNumber) {
     gs1Data += `(${AI_LOT})${lotNumber}`;
   }
   
-  // Add Expiry Date
+  // Add Expiry Date (set by user)
   if (expiryDate) {
     gs1Data += `(${AI_EXPIRY})${expiryDate}`;
   }
   
-  // Add Country Code
-  gs1Data += `(${AI_COUNTRY})${countryCode}`;
-  
-  // Add Manufacturer Code
-  gs1Data += `(${AI_MANUFACTURER})${manufacturerCode}`;
+  // Add Net Weight (set by user)
+  if (netWeight) {
+    gs1Data += `(${AI_WEIGHT})${netWeight}`;
+  }
 
   return gs1Data;
 };
@@ -49,6 +46,26 @@ const formatExpiryDateForGS1 = (dateString: string): string => {
     const [year, month] = dateString.split('-');
     const shortYear = year.substring(2); // Get last 2 digits of year
     return `${shortYear}${month}01`; // YYMMDD format (using 01 for day)
+  } catch {
+    return '';
+  }
+};
+
+// Format weight for GS1 (AI 3103 = net weight in kg with 3 decimal places)
+const formatWeightForGS1 = (weightString: string): string => {
+  if (!weightString) return '';
+  
+  try {
+    // Remove any non-numeric characters except decimal point
+    const cleanWeight = weightString.replace(/[^\d.,]/g, '').replace(',', '.');
+    const weight = parseFloat(cleanWeight);
+    
+    if (isNaN(weight)) return '';
+    
+    // Format to 3 decimal places and remove decimal point for GS1
+    // Example: 25.000 kg becomes "025000" (multiply by 1000)
+    const formattedWeight = Math.round(weight * 1000).toString().padStart(6, '0');
+    return formattedWeight;
   } catch {
     return '';
   }
@@ -195,13 +212,8 @@ export const parseEAN128Barcode = (scannedData: string): any => {
         case '17':
           result.expiryDate = parseGS1Date(data);
           break;
-        case '421':
-          result.countryCode = data;
-          result.country = getCountryName(data);
-          break;
-        case '414':
-          result.manufacturerCode = data;
-          result.manufacturer = getManufacturerName(data);
+        case '3103':
+          result.netWeight = parseGS1Weight(data);
           break;
       }
     }
@@ -227,25 +239,23 @@ const parseGS1Date = (dateString: string): string => {
   return `${year}-${month}-${day}`;
 };
 
-// Get country name from code
-const getCountryName = (code: string): string => {
-  const countries: { [key: string]: string } = {
-    '243': 'Democratic Republic of Congo',
-    '250': 'Rwanda',
-    '256': 'Uganda',
-    '254': 'Kenya'
-  };
-  return countries[code] || `Country Code: ${code}`;
+// Parse GS1 weight format (AI 3103 - 6 digits representing kg with 3 decimal places)
+const parseGS1Weight = (weightString: string): string => {
+  if (weightString.length !== 6) return weightString;
+  
+  try {
+    // Convert back from GS1 format (divide by 1000)
+    const weight = parseInt(weightString) / 1000;
+    return `${weight.toFixed(3)} kg`;
+  } catch {
+    return weightString;
+  }
 };
 
-// Get manufacturer name from code
-const getManufacturerName = (code: string): string => {
-  const manufacturers: { [key: string]: string } = {
-    '1240': 'PHARMAKINA S.A.',
-    '1241': 'PHARMAKINA Branch Office'
-  };
-  return manufacturers[code] || `Manufacturer Code: ${code}`;
-};
+// Legacy functions for backward compatibility
+export const generateBarcodeDataURL = generateEAN128BarcodeDataURL;
+export const generateProductInfoString = generateEAN128Barcode;
+export const parseProductInfoFromBarcode = parseEAN128Barcode;
 
 // Download barcode as image
 export const downloadEAN128Barcode = (gs1Data: string, filename?: string) => {
@@ -256,8 +266,4 @@ export const downloadEAN128Barcode = (gs1Data: string, filename?: string) => {
   link.click();
 };
 
-// Legacy functions for backward compatibility
-export const generateBarcodeDataURL = generateEAN128BarcodeDataURL;
 export const downloadBarcode = downloadEAN128Barcode;
-export const generateProductInfoString = generateEAN128Barcode;
-export const parseProductInfoFromBarcode = parseEAN128Barcode;

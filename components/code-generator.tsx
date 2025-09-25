@@ -15,7 +15,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Copy, RefreshCw, QrCode, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { generateProductInfoString } from "@/lib/barcode-generator";
+import { generateEAN128Barcode, generateEAN128BarcodeDataURL } from "@/lib/barcode-generator";
 import type { ProductData } from "./label-generator";
 
 interface CodeGeneratorProps {
@@ -82,26 +82,10 @@ export function CodeGenerator({
     const timestamp = Date.now().toString(36).toUpperCase();
     const code = productData.code.replace(/[^A-Z0-9]/g, "");
     const manufacturingDate = productData.manufacturingDate.replace(/-/g, "");
-    const randomSuffix = Math.random()
-      .toString(36)
-      .substring(2, 6)
-      .toUpperCase();
-
-    // Generate base tracking code
-    let trackingCode = '';
-    switch (format) {
-      case "standard":
-        trackingCode = `${code}-${timestamp}`;
-        break;
-      case "batch":
-        const batchNumber = String(index || 1).padStart(3, "0");
-        trackingCode = `${code}-${manufacturingDate}-${batchNumber}-${randomSuffix}`;
-        break;
-      case "qr":
-        trackingCode = `QR-${code}-${timestamp}-${randomSuffix}`;
         break;
       case "barcode":
-        trackingCode = `${code}${manufacturingDate.substring(2)}${randomSuffix}`;
+        // Generate EAN-128 (GS1-128) barcode with specific AIs
+        return generateProductInfoString(productData);
         break;
       case "custom":
         const prefix = customPrefix || "CUSTOM";
@@ -109,16 +93,6 @@ export function CodeGenerator({
         break;
       default:
         trackingCode = `${code}-${timestamp}`;
-    }
-
-    // For barcode format, encode full product information
-    if (format === "barcode") {
-      const productInfo = generateProductInfoString({
-        ...productData,
-        trackingCode: trackingCode,
-        generatedAt: new Date().toISOString()
-      });
-      return productInfo;
     }
 
     return trackingCode;
