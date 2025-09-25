@@ -181,9 +181,9 @@ export function ProductForm({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="grossWeight">Shipping marks</Label>
+            <Label htmlFor="shipping">Shipping marks</Label>
             <Input
-              id="grossWeight"
+              id="shipping"
               value={productData?.shipping}
               onChange={(e) => updateField("shipping", e.target.value)}
               placeholder="Ex: Qatar"

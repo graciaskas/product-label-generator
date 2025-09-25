@@ -266,9 +266,9 @@ export function LabelPreview({
 
         {/* Template 1 Preview */}
         {template.id === "template1" && (
-          <div className="label-preview border-2 border-green-600 bg-white text-black max-w-2xl mx-auto">
+          <div className="label-preview border-2 border-[#345041] bg-white text-black max-w-2xl mx-auto">
             {/* Header */}
-            <div className="bg-green-600 text-white p-3 flex justify-between items-start">
+            <div className="bg-[#345041] text-white p-3 flex justify-between items-start">
               <div className="flex-1">
                 <div className="font-bold text-sm">
                   {productData.manufacturer?.name || "PHARMAKINA S.A."}
@@ -291,8 +291,8 @@ export function LabelPreview({
             </div>
 
             {/* Title */}
-            <div className="bg-green-600 p-2">
-              <div className="bg-white text-green-600 rounded-full py-2 px-4 text-center font-bold">
+            <div className="bg-[#345041] p-2">
+              <div className="bg-white text-[#345041] rounded-full py-2 px-4 text-center font-bold">
                 {productData.name || "NOM DU PRODUIT"}
               </div>
             </div>
@@ -335,7 +335,7 @@ export function LabelPreview({
               <div className="space-y-1">
                 <div className="flex">
                   <span className="font-bold">Manufacturer: </span>
-                  <span className="text-green-600 font-bold">
+                  <span className="text-[#345041] font-bold">
                     {productData.manufacturer?.name || "PHARMAKINA S.A."}
                   </span>
                 </div>
@@ -400,7 +400,7 @@ export function LabelPreview({
         {template.id === "template2" && (
           <div className="label-preview bg-white text-black max-w-2xl mx-auto">
             {/* Header */}
-            <div className="border-4 border-green-600 p-3 mb-2 text-center">
+            <div className="border-4 border-[#345041] p-3 mb-2 text-center">
               <div className="text-red-600 font-bold text-lg mb-1">
                 {productData.name || "QUININE HYDROCHLORIDE DIHYDRATE"}
               </div>
@@ -440,7 +440,7 @@ export function LabelPreview({
             <div className="flex mb-2">
               <div className="flex-2 space-y-3">
                 {/* Hazard Statements */}
-                <div className="bg-green-600 text-white p-2">
+                <div className="bg-[#345041] text-white p-2">
                   <div className="font-bold text-xs mb-1">
                     HAZARD STATEMENT:
                   </div>
@@ -458,7 +458,7 @@ export function LabelPreview({
                 </div>
 
                 {/* Precautionary Statements */}
-                <div className="bg-green-600 text-white p-2">
+                <div className="bg-[#345041] text-white p-2">
                   <div className="font-bold text-xs mb-1">
                     PRECAUTIONARY STATEMENT PREVENTION:
                   </div>
@@ -483,10 +483,10 @@ export function LabelPreview({
               <div className="flex-1 text-center space-y-4">
                 {/* Net Weight */}
                 <div>
-                  <div className="text-green-600 font-bold text-sm">
+                  <div className="text-[#345041] font-bold text-sm">
                     Net weight
                   </div>
-                  <div className="text-green-600 font-bold text-3xl">
+                  <div className="text-[#345041] font-bold text-3xl">
                     {productData.netWeight || "25"} Kg
                   </div>
                 </div>
@@ -504,7 +504,7 @@ export function LabelPreview({
             </div>
 
             {/* Footer */}
-            <div className="bg-green-600 text-white p-3 flex justify-between items-center">
+            <div className="bg-[#345041] text-white p-3 flex justify-between items-center">
               <div className="flex items-center justify-center">
                 <Image
                   src={"/logo_white.png"}

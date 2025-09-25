@@ -8,7 +8,7 @@ import {
   Image,
 } from "@react-pdf/renderer";
 import type { ProductData, LabelTemplate } from "./label-generator";
-
+import logo_img from "../images/logo_white.png";
 // Define styles for PDF
 const styles = StyleSheet.create({
   page: {
@@ -20,14 +20,14 @@ const styles = StyleSheet.create({
   labelContainer: {
     width: "48%",
     margin: "1%",
-    border: "2px solid #16a34a",
+    border: "2px solid #345041",
     backgroundColor: "#ffffff",
     fontSize: 8,
     fontFamily: "Helvetica",
   },
   // Template 1 Styles
   template1Header: {
-    backgroundColor: "#16a34a",
+    backgroundColor: "#345041",
     color: "#ffffff",
     padding: 8,
     flexDirection: "row",
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
     height: 30,
     border: "2px solid #ffffff",
     borderRadius: 15,
-    backgroundColor: "#16a34a",
+    backgroundColor: "#345041",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -62,12 +62,12 @@ const styles = StyleSheet.create({
     lineHeight: 1,
   },
   template1Title: {
-    backgroundColor: "#16a34a",
+    backgroundColor: "#345041",
     padding: 6,
   },
   template1TitleInner: {
     backgroundColor: "#ffffff",
-    color: "#16a34a",
+    color: "#345041",
     borderRadius: 10,
     padding: 6,
     textAlign: "center",
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   template1ManufacturerName: {
-    color: "#16a34a",
+    color: "#345041",
     fontWeight: "bold",
   },
   template1ShippingMarks: {
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
   },
   // Template 2 Styles
   template2Header: {
-    border: "3px solid #16a34a",
+    border: "3px solid #345041",
     padding: 6,
     marginBottom: 4,
     textAlign: "center",
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   template2HazardSection: {
-    backgroundColor: "#16a34a",
+    backgroundColor: "#345041",
     color: "#ffffff",
     padding: 4,
     marginBottom: 6,
@@ -177,12 +177,12 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   template2NetWeightLabel: {
-    color: "#16a34a",
+    color: "#345041",
     fontSize: 7,
     fontWeight: "bold",
   },
   template2NetWeightValue: {
-    color: "#16a34a",
+    color: "#345041",
     fontSize: 16,
     fontWeight: "bold",
   },
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   template2Footer: {
-    backgroundColor: "#16a34a",
+    backgroundColor: "#345041",
     color: "#ffffff",
     padding: 6,
     flexDirection: "row",
@@ -280,16 +280,13 @@ const Template1Label: React.FC<{
         <Text style={styles.template1CompanyName}>
           {productData.manufacturer?.name || "PHARMAKINA S.A."}
         </Text>
-        <Text style={styles.template1Address}>
-          {productData.manufacturer?.address ||
-            "Km4, Route de Goma, P.O. Box 1240 BUKAVU"}
-        </Text>
+        <Text style={styles.template1Address}>P.O. Box 1240 BUKAVU</Text>
         <Text style={styles.template1Address}>
           {productData.manufacturer?.country || "Democratic Republic of Congo"}
         </Text>
       </View>
       <View>
-        <Image src={"/logo_white.png"} style={{ width: "100%" }} />
+        <Image src="/logo_white.png" style={{ width: 80, height: "auto" }} />
       </View>
     </View>
 
@@ -369,8 +366,8 @@ const Template1Label: React.FC<{
       </View>
 
       <View>
-        <Text style={styles.template1ShippingMarks}>SHIPPING MARKS: --</Text>
-        {productData?.shipping || ""}
+        <Text style={styles.template1ShippingMarks}>SHIPPING MARKS: </Text>
+        {productData?.shipping}
       </View>
 
       {/* Barcode Section */}
@@ -499,7 +496,7 @@ const Template2Label: React.FC<{
     {/* Footer */}
     <View style={styles.template2Footer}>
       <View style={styles.template2FooterLogo}>
-        <Image src={"/logo_white.png"} style={{ width: "100%" }} />
+        <Image src="/logo_white.png" style={{ width: 80, height: "auto" }} />
       </View>
       <View style={styles.template2FooterText}>
         <Text>
