@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 // EAN-128 (GS1-128) Barcode Generator for Pharmaceutical Products
 export const generateEAN128Barcode = (productData: any): string => {
   // GS1 Application Identifiers (AI)
@@ -114,6 +115,10 @@ export const generateEAN128BarcodeDataURL = (gs1Data: string): string => {
 export const generateBarcodeDataURL = (text: string): string => {
   // Create a canvas element
 >>>>>>> parent of 4650916 (Implement EAN-128 (GS1-128) Barcode Format)
+=======
+export const generateBarcodeDataURL = (text: string): string => {
+  // Create a canvas element
+>>>>>>> parent of 4650916 (Implement EAN-128 (GS1-128) Barcode Format)
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
   
@@ -173,6 +178,7 @@ export const generateBarcodeDataURL = (text: string): string => {
   return canvas.toDataURL('image/png');
 };
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 // Parse EAN-128 barcode data
 export const parseEAN128Barcode = (scannedData: string): any => {
@@ -350,6 +356,16 @@ export const generateEAN128BarcodeDataURL = (gs1Data: string): string => {
 
 export const downloadBarcode = downloadEAN128Barcode;
 =======
+=======
+export const downloadBarcode = (text: string, filename?: string) => {
+  const dataURL = generateBarcodeDataURL(text);
+  const link = document.createElement('a');
+  link.download = filename || `barcode-${text}.png`;
+  link.href = dataURL;
+  link.click();
+};
+
+>>>>>>> parent of 4650916 (Implement EAN-128 (GS1-128) Barcode Format)
 // Generate product information string for barcode encoding
 export const generateProductInfoString = (productData: any): string => {
   const info = {
@@ -375,5 +391,9 @@ export const parseProductInfoFromBarcode = (scannedData: string): any => {
     // If not JSON, return as simple string
     return { rawData: scannedData };
   }
+<<<<<<< HEAD
+};
+>>>>>>> parent of 4650916 (Implement EAN-128 (GS1-128) Barcode Format)
+=======
 };
 >>>>>>> parent of 4650916 (Implement EAN-128 (GS1-128) Barcode Format)
