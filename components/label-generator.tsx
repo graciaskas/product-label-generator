@@ -16,6 +16,7 @@ export interface ProductData {
   grossWeight: string;
   netWeight: string;
   exportLot: string;
+  shipping: string;
   casNumber?: string;
   origin?: string;
   uses?: string[];
@@ -51,6 +52,7 @@ export function LabelGenerator() {
     expiryDate: "",
     grossWeight: "",
     netWeight: "",
+    shipping: "",
     exportLot: "",
     storageConditions: "",
     manufacturer: {

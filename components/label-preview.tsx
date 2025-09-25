@@ -16,6 +16,7 @@ import { PrintHistoryManager } from "@/lib/print-history";
 import { pdf } from "@react-pdf/renderer";
 import { LabelPDFDocument } from "./pdf-label-templates";
 import type { ProductData, LabelTemplate } from "./label-generator";
+import Image from "next/image";
 
 interface LabelPreviewProps {
   template: LabelTemplate | null;
@@ -272,21 +273,20 @@ export function LabelPreview({
                 <div className="font-bold text-sm">
                   {productData.manufacturer?.name || "PHARMAKINA S.A."}
                 </div>
-                <div className="text-xs">
-                  {productData.manufacturer?.address ||
-                    "Km4, Route de Goma, P.O. Box 1240 BUKAVU"}
-                </div>
+                <div className="text-xs">P.O. Box 1240 BUKAVU</div>
                 <div className="text-xs">
                   {productData.manufacturer?.country ||
                     "Democratic Republic of Congo"}
                 </div>
               </div>
-              <div className="w-12 h-12 border-2 border-white rounded-full flex items-center justify-center">
-                <div className="text-xs text-center leading-tight">
-                  BUKAVU
-                  <br />
-                  PHARMAKINA
-                </div>
+              <div className="flex items-center justify-center">
+                <Image
+                  src={"/logo_white.png"}
+                  alt="logo"
+                  width={30}
+                  height={30}
+                  style={{ width: "100%" }}
+                />
               </div>
             </div>
 
@@ -355,14 +355,17 @@ export function LabelPreview({
                 </div>
               </div>
 
-              <div className="pt-4">
-                <div className="text-lg font-bold">SHIPPING MARKS: --</div>
+              <div className="pt-4 flex items-center">
+                <span className="text-lg font-bold">SHIPPING MARKS: </span>
+                <span className="font-bold text-end ml-2">
+                  {productData?.shipping || ""}
+                </span>
               </div>
 
               {/* Barcode Section */}
               {generatedCode && (
                 <div className="barcode-container border-t-2 border-gray-300 pt-4 mt-4 text-center">
-                  <div className="font-mono font-bold text-sm mb-2">
+                  {/* <div className="font-mono font-bold text-sm mb-2">
                     Code de Traçabilité:{" "}
                     {(() => {
                       try {
@@ -374,7 +377,7 @@ export function LabelPreview({
                         return generatedCode;
                       }
                     })()}
-                  </div>
+                  </div> */}
                   {barcodeDataURL && (
                     <img
                       src={barcodeDataURL}
@@ -502,12 +505,14 @@ export function LabelPreview({
 
             {/* Footer */}
             <div className="bg-green-600 text-white p-3 flex justify-between items-center">
-              <div className="w-12 h-12 border-2 border-white rounded-full flex items-center justify-center">
-                <div className="text-xs text-center leading-tight">
-                  BUKAVU
-                  <br />
-                  PHARMAKINA
-                </div>
+              <div className="flex items-center justify-center">
+                <Image
+                  src={"/logo_white.png"}
+                  alt="logo"
+                  width={30}
+                  height={30}
+                  style={{ width: "100%" }}
+                />
               </div>
               <div className="text-right text-xs">
                 <div>

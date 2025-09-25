@@ -180,6 +180,16 @@ export function ProductForm({
             </div>
           </div>
 
+          <div className="space-y-2">
+            <Label htmlFor="grossWeight">Shipping marks</Label>
+            <Input
+              id="grossWeight"
+              value={productData?.shipping}
+              onChange={(e) => updateField("shipping", e.target.value)}
+              placeholder="Ex: Qatar"
+            />
+          </div>
+
           {selectedTemplate.id === "template2" && (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

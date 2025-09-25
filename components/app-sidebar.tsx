@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "./ui/button";
 import { signOut } from "next-auth/react";
+import { useEffect, useRef, useState } from "react";
 
 const menuItems = [
   {
@@ -65,7 +66,7 @@ export function AppSidebar() {
   const { t } = useTranslation();
 
   return (
-    <Sidebar className="relative">
+    <Sidebar>
       <SidebarHeader className="border-b px-6 py-4">
         <div className="flex items-center gap-2">
           <div

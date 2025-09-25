@@ -1,3 +1,4 @@
+"use client";
 import { LabelGenerator } from "@/components/label-generator";
 
 export default function GeneratePage() {

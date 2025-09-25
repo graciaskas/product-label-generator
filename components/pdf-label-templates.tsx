@@ -218,10 +218,6 @@ const styles = StyleSheet.create({
     fontSize: 6,
   },
   template2FooterLogo: {
-    width: 24,
-    height: 24,
-    border: "2px solid #ffffff",
-    borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -292,8 +288,8 @@ const Template1Label: React.FC<{
           {productData.manufacturer?.country || "Democratic Republic of Congo"}
         </Text>
       </View>
-      <View style={styles.template1Logo}>
-        <Text style={styles.template1LogoText}>BUKAVU{"\n"}PHARMAKINA</Text>
+      <View>
+        <Image src={"/logo_white.png"} style={{ width: "100%" }} />
       </View>
     </View>
 
@@ -372,12 +368,15 @@ const Template1Label: React.FC<{
         </View>
       </View>
 
-      <Text style={styles.template1ShippingMarks}>SHIPPING MARKS: --</Text>
+      <View>
+        <Text style={styles.template1ShippingMarks}>SHIPPING MARKS: --</Text>
+        {productData?.shipping || ""}
+      </View>
 
       {/* Barcode Section */}
       {generatedCode && (
         <View style={styles.barcodeContainer}>
-          <Text style={styles.barcodeLabel}>
+          {/* <Text style={styles.barcodeLabel}>
             Code de Traçabilité:{" "}
             {(() => {
               try {
@@ -387,7 +386,7 @@ const Template1Label: React.FC<{
                 return generatedCode;
               }
             })()}
-          </Text>
+          </Text> */}
           {barcodeDataURL && (
             <Image src={barcodeDataURL} style={styles.barcodeImage} />
           )}
@@ -500,9 +499,7 @@ const Template2Label: React.FC<{
     {/* Footer */}
     <View style={styles.template2Footer}>
       <View style={styles.template2FooterLogo}>
-        <Text style={styles.template2FooterLogoText}>
-          BUKAVU{"\n"}PHARMAKINA
-        </Text>
+        <Image src={"/logo_white.png"} style={{ width: "100%" }} />
       </View>
       <View style={styles.template2FooterText}>
         <Text>
@@ -527,7 +524,7 @@ const Template2Label: React.FC<{
     {/* Barcode Section */}
     {generatedCode && (
       <View style={styles.barcodeContainer}>
-        <Text style={styles.barcodeLabel}>
+        {/* <Text style={styles.barcodeLabel}>
           Code de Traçabilité:{" "}
           {(() => {
             try {
@@ -537,7 +534,7 @@ const Template2Label: React.FC<{
               return generatedCode;
             }
           })()}
-        </Text>
+        </Text> */}
         {barcodeDataURL && (
           <Image src={barcodeDataURL} style={styles.barcodeImage} />
         )}

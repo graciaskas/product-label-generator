@@ -47,13 +47,13 @@ export const downloadBarcode = (text: string, filename?: string) => {
 // Note: Variable-length fields like batch code are terminated by the
 // FNC1 character, which JsBarcode automatically handles with the GS1 standard.
 export const generateProductInfoString = (productData: any): string => {
-  const gtin = productData.code || "";
   const expDate = productData.expiryDate || ""; // Format: YYMMDD
-  const batchCode = productData.exportLot || "";
+  const batchCode = productData.code || "";
+  const exportLot = productData.exportLot || "";
 
   // The format is (AI)Data(AI)Data...
   // Example: (01)GTIN(17)ExpiryDate(10)BatchCode
-  return `(01)${gtin}(17)${expDate}(10)${batchCode}`;
+  return `(00)${exportLot}(10)${batchCode}(17)${expDate}`;
 };
 
 // This function now correctly parses the GS1 string back into a JavaScript object.
@@ -69,9 +69,10 @@ export const parseProductInfoFromBarcode = (scannedData: string): any => {
       const value = match[2];
 
       // Map the AIs to meaningful property names
-      if (ai === "01") data.code = value;
+
       if (ai === "17") data.expiryDate = value;
-      if (ai === "10") data.exportLot = value;
+      if (ai === "10") data.batchCode = value;
+      if (ai === "00") data.exportLot = value;
       // Add more AIs as needed...
     }
     return data;
